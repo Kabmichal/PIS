@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align:center">Zoznam mien</h1>
+    <h4 style="text-align: right;">Objednavka</h4>
+    {% if client_list|length < 1 %}
+        <h4 style="text-align: center;">Nie su k dispozicii ziadny pouzivatelia, vytvor nejakeho kliknutim dole!</1>
+    {% else %} 
+        <table style="text-align: center;">
+            <tr>
+                <th>Name</th>
+                <th>Rola</th>
+                <th>Pobocka</th>
+                <th>Actions</th>
+            </tr>
+            {% for lists in client_list %}
+                <tr>
+                    <td>{{ lists.name }}</td>
+                    <td>{{ lists.rola }}</td>
+                    <td>{{ lists.pobocka_id }}</td>
+                    <td>
+                        <a href="/delete/{{lists.id}}">Delete</a>
+                        <br>
+                        <a href="/update/{{lists.id}}">Update</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <div class="form">
+        <form actions = '/' method = "POST">
+            Name:
+            <input type="text" name="name" id="name">
+            Rola:
+            <input type="text" name="rola" id="rola">
+            Pobocka:
+            <input type="text" name="pobocka" id="pobocka">
+            <input type="submit" value="Add task">
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align:center">Uprava mena</h1>
+
+    <form actions = '/update/{{user.id}}' method = "POST">
+        Name:
+        <input type="text" name="name" id="name" value="{{user.name}}">
+        Rola:
+        <input type="text" name="rola" id="rola" value="{{user.rola}}">
+        Pobocka:
+        <input type="text" name="pobocka" id="pobocka" value="{{user.pobocka_id}}">
+        <input type="submit" value="Update task">
+    </form>
+</div>
+{% endblock %}
