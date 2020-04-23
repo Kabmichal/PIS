@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    {% if pobocky|length < 1 %}
+    <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
+    {% else %} 
+    <table style="text-align: center;">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Adresa</th>
+            <th>Actions</th>
+        </tr>
+        {% for pobocka in pobocky %}
+            <tr>
+                <td>{{ pobocka.id }}</td>
+                <td>{{ pobocka.name }}</td>
+                <td>{{ pobocka.adresa }}</td>
+                <td>
+                    <a href="/delete_produkt/{{pobocka.id}}">Delete</a>
+                    <br>
+                    <a href="/update_produkt/{{pobocka.id}}">Update</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <div class="form">
+        <form actions = '/vytvor_pobocka2' method = "POST">
+            Nazov:
+            <input type="text" name="name" id="name">
+            Adresa:
+            <input type="text" name="adresa" id="adresa">
+            <input type="submit" value="Pridaj pobocku2" name="button" id="pridaj_pobocku">
+        </form>
+    </div>
+    <div class="form">
+        <form actions = '/vytvor_pobocka2' method = "POST">
+            Nazov:
+            <input type="text" name="name" id="name">
+            Adresa:
+            <input type="text" name="adresa" id="adresa">
+            <input type="submit" value="Pridaj pobocku" name="button" id="pridaj_pobocku2">
+        </form>
+    </div>
+    <a href="/">Spat</a>
+</div>
+<div>
+
+</div>
+{% endblock %}

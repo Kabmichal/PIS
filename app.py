@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
 from controllers.zamestnanec_controller import *
 from controllers.produkt_controller import *
+from controllers.pobocka_controller import *
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -13,9 +14,28 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021zamestnanec?WSDL')
 objednavka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021objednavka?WSDL')
 produkt = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt?WSDL')
+pobocka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021pobocka?WSDL')
 
 class MyForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
+
+
+@app.route('/vytvor_pobocka2',methods = ['POST','GET'])
+def add_pobocka():
+    if request.method=='POST':
+        task_name = request.form['name']
+        task_adresa = request.form['adresa']
+        print("*******************************")
+        print(request.form['button'])
+        if request.form['button'] == 'pridaj_pobocku':
+            print("Hello world")
+        pridaj_pobocku(task_name,task_adresa,pobocka)
+        return redirect('/')
+    else:
+        pobocky = pobocka.service.getAll()
+        if pobocky is None:
+            pobocky = []
+        return render_template('pobocka.html',pobocky=pobocky)
 
 
 @app.route('/objednavka', methods = ['GET','POST'])
@@ -43,6 +63,8 @@ def vytvor_produkt():
 def update_produkt(id):
     vstupny_produkt = produkt.service.getById(id)
     print("vstupny produkt ",vstupny_produkt)
+    a = [1,2,3,4,5]
+    print(type(vstupny_produkt))
     if request.method == 'POST':
         task_name = request.form['name']
         task_pocet = request.form['min_pocet']
