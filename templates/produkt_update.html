@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align:center">Uprava mena</h1>
+
+    <form actions = '/update_produkt/{{vstupny_produkt.id}}' method = "POST">
+        Nazov:
+        <input type="text" name="name" id="name" value="{{vstupny_produkt.name}}">
+        Min pocet:
+        <input type="text" name="min_pocet" id="min_pocet" value="{{vstupny_produkt.min_pocet}}">
+        Dalsi predaj:
+        <input type="text" name="dalsi_predaj" id="dalsi_predaj" value="{{vstupny_produkt.dalsi_predaj}}">
+        <input type="submit" value="Update task">
+    </form>
+    <a href="/">Spat</a>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    {% if produkt_list|length < 1 %}
+    <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
+    {% else %} 
+    <table style="text-align: center;">
+        <tr>
+            <th>Name</th>
+            <th>Min Pocet</th>
+            <th>Dalsi predaj</th>
+            <th>Actions</th>
+        </tr>
+        {% for produkt in produkt_list %}
+            <tr>
+                <td>{{ produkt.name }}</td>
+                <td>{{ produkt.min_pocet }}</td>
+                <td>{{ produkt.dalsi_predaj }}</td>
+                <td>
+                    <a href="/delete_produkt/{{produkt.id}}">Delete</a>
+                    <br>
+                    <a href="/update_produkt/{{produkt.id}}">Update</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <div class="form">
+        <form actions = '/vytvor_produkt' method = "POST">
+            Nazov:
+            <input type="text" name="name" id="name">
+            Min pocet:
+            <input type="text" name="min_pocet" id="min_pocet">
+            Dalsi predaj:
+            <input type="text" name="dalsi_predaj" id="dalsi_predaj">
+            <input type="submit" value="Pridaj produkt">
+        </form>
+    </div>
+    <a href="/">Spat</a>
+</div>
+{% endblock %}

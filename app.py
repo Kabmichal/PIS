@@ -3,7 +3,8 @@ from zeep import Client
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
-from controllers.zamestnanec_controller import try2_func,update_func
+from controllers.zamestnanec_controller import *
+from controllers.produkt_controller import *
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -11,9 +12,45 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 
 client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021zamestnanec?WSDL')
 objednavka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021objednavka?WSDL')
+produkt = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt?WSDL')
 
 class MyForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
+
+
+@app.route('/objednavka', methods = ['GET','POST'])
+def objednaj():
+    if request.method == 'POST':
+        return redirect('/')
+    else:
+        return render_template('objednavka.html')
+
+@app.route('/vytvor_produkt', methods = ['GET','POST'])
+def vytvor_produkt():
+    if request.method == 'POST':
+        task_name = request.form['name']
+        task_pocet = request.form['min_pocet']
+        task_predaj = request.form['dalsi_predaj']
+        pridaj_produkt(task_name, task_pocet,task_predaj,produkt)
+        return redirect('/vytvor_produkt')
+    else:
+        produkt_list = produkt.service.getAll()
+        if produkt_list is None:
+            produkt_list = []
+        return render_template('produkt.html',produkt_list=produkt_list)
+
+@app.route('/update_produkt/<int:id>', methods = ['GET','POST'])
+def update_produkt(id):
+    vstupny_produkt = produkt.service.getById(id)
+    print("vstupny produkt ",vstupny_produkt)
+    if request.method == 'POST':
+        task_name = request.form['name']
+        task_pocet = request.form['min_pocet']
+        task_predaj = request.form['dalsi_predaj']
+        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+        return redirect('/vytvor_produkt')
+    else:
+        return render_template('produkt_update.html',vstupny_produkt=vstupny_produkt)
 
 @app.route('/delete/<int:id>')
 def delete(id):
