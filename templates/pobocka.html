@@ -36,18 +36,27 @@
             <input type="text" name="name" id="name">
             Adresa:
             <input type="text" name="adresa" id="adresa">
-            <input type="submit" value="Pridaj pobocku2" name="button" id="pridaj_pobocku">
+            <input type="submit" value="Pridaj pobocku" name="button" id="pridaj_pobocku">
         </form>
     </div>
     <div class="form">
         <form actions = '/vytvor_pobocka2' method = "POST">
             Nazov:
-            <input type="text" name="name" id="name">
-            Adresa:
-            <input type="text" name="adresa" id="adresa">
-            <input type="submit" value="Pridaj pobocku" name="button" id="pridaj_pobocku2">
+            <input type="text" name="nazov" id="nazov">
+            Id produkt:
+            <input type="text" name="produkt_id" id="produkt_id">
+            Id pobocka:
+            <input type="text" name="pobocka_id" id="pobocka_id">
+            Pocet pobocka:
+            <input type="text" name="pocet_pobocka" id="pocet_pobocka">
+            Pokles minima
+            <input type="text" name="pokles_minima" id="pokles_minima">
+            <input type="submit" value="Pridaj produkt" name="button" id="pridaj_produkt">
         </form>
     </div>
+        <div>
+        <a href="/uprav_mnozstvo">Uprav mnozstvo</a>
+        </div>
     <a href="/">Spat</a>
 </div>
 <div>

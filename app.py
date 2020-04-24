@@ -6,6 +6,8 @@ from flask_wtf import FlaskForm
 from controllers.zamestnanec_controller import *
 from controllers.produkt_controller import *
 from controllers.pobocka_controller import *
+from controllers.pobocka_produkt_controller import *
+from model.produktPobocka import *
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -15,22 +17,52 @@ client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021z
 objednavka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021objednavka?WSDL')
 produkt = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt?WSDL')
 pobocka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021pobocka?WSDL')
+produkt_pobocka_wsdl = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt_pobocka?WSDL')
 
 class MyForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
 
+@app.route('/uprav_mnozstvo',methods = ['POST','GET'])
+def uprav_mnozstvo_pobocka():
+    if request.method=='POST':
+        flash("ok")
+        task_produkt_id = request.form['produkt_id']
+        task_mnozstvo = request.form['mnozstvo']
+        najdeny_produkt = produkt_pobocka_wsdl.service.getByAttributeValue("produkt_id",task_produkt_id,produkt_pobocka_wsdl.service.getAll())
+        if najdeny_produkt is not None:
+            print("zzzzzzzzzzzzzzzzzz")
+            print(najdeny_produkt)
+            print(najdeny_produkt[0].id)
+            najdeny_produkt = ProduktPobocka(int(najdeny_produkt[0]['id']),najdeny_produkt[0]['name'],int(najdeny_produkt[0]['produkt_id']),int(najdeny_produkt[0]['pobocka_id']),int(najdeny_produkt[0]['pocet_pobocka']),najdeny_produkt[0]['pokles_minima'])
+            if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>0:
+                hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
+                uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
+            else:
+                flash("nizka hodnota")
+                print("nedostatok money")
+        return redirect("/vytvor_pobocka2")
+    else:
+        flash("ok")
+        return render_template('uprav_mnozstvo.html')
 
 @app.route('/vytvor_pobocka2',methods = ['POST','GET'])
 def add_pobocka():
     if request.method=='POST':
-        task_name = request.form['name']
-        task_adresa = request.form['adresa']
-        print("*******************************")
         print(request.form['button'])
-        if request.form['button'] == 'pridaj_pobocku':
-            print("Hello world")
-        pridaj_pobocku(task_name,task_adresa,pobocka)
-        return redirect('/')
+        if request.form['button'] == 'Pridaj pobocku':
+            print("pridaj pobocku")
+            task_name = request.form['name']
+            task_adresa = request.form['adresa']
+            pridaj_pobocku(task_name,task_adresa,pobocka)
+        else:
+            print("pridaj produkt")
+            task_name = request.form['nazov']
+            task_produkt_id = request.form['produkt_id']
+            task_pobocka_id= request.form['pobocka_id']
+            task_pocet_pobocka = request.form['pocet_pobocka']
+            task_pokles_minima = request.form['pokles_minima']
+            pridaj_produkt_pobocka(task_name,task_produkt_id,task_pobocka_id,task_pocet_pobocka,task_pokles_minima,produkt_pobocka_wsdl)
+        return redirect('/vytvor_pobocka2')
     else:
         pobocky = pobocka.service.getAll()
         if pobocky is None:
@@ -63,8 +95,6 @@ def vytvor_produkt():
 def update_produkt(id):
     vstupny_produkt = produkt.service.getById(id)
     print("vstupny produkt ",vstupny_produkt)
-    a = [1,2,3,4,5]
-    print(type(vstupny_produkt))
     if request.method == 'POST':
         task_name = request.form['name']
         task_pocet = request.form['min_pocet']

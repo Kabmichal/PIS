@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+       <div class="form">
+        <form actions = '/vytvor_pobocka2' method = "POST">
+            Produkt:
+            <input type="text" name="produkt_id" id="produkt_id">
+            Mnozstvo:
+            <input type="text" name="mnozstvo" id="mnozstvo">
+            <input type="submit" value="Objednaj" name="button" id="Objednaj">
+        </form>
+    </div>
+    <a href="/vytvor_pobocka2">Spat</a>
+</div>
+{% endblock %}
