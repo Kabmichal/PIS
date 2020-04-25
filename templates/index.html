@@ -6,45 +6,64 @@
 
 {% block body %}
 <div class="content">
+    ahoj {{ current_user }}
+    {% if current_user.is_authenticated %}
     <h1 style="text-align:center">Zoznam mien</h1>
     <a href="/objednavka">Objednavka</a>
     <a href="/vytvor_produkt">Produkt</a>
     <a href="/vytvor_pobocka2">Pobocka</a>
-    {% if client_list|length < 1 %}
-        <h4 style="text-align: center;">Nie su k dispozicii ziadny pouzivatelia, vytvor nejakeho kliknutim dole!</1>
-    {% else %} 
-        <table style="text-align: center;">
-            <tr>
-                <th>Name</th>
-                <th>Rola</th>
-                <th>Pobocka</th>
-                <th>Actions</th>
-            </tr>
-            {% for lists in client_list %}
+    <div>
+        <a href="/logout">Logout</a>
+    </div>
+    {% else %}
+        {% if client_list|length < 1 %}
+            <h4 style="text-align: center;">Nie su k dispozicii ziadny pouzivatelia, vytvor nejakeho kliknutim dole!</1>
+        {% else %} 
+            <table style="text-align: center;">
                 <tr>
-                    <td>{{ lists.name }}</td>
-                    <td>{{ lists.rola }}</td>
-                    <td>{{ lists.pobocka_id }}</td>
-                    <td>
-                        <a href="/delete/{{lists.id}}">Delete</a>
-                        <br>
-                        <a href="/update/{{lists.id}}">Update</a>
-                    </td>
+                    <th>Name</th>
+                    <th>Rola</th>
+                    <th>Pobocka</th>
+                    <th>Email</th>
+                    <th>Heslo</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+                {% for lists in client_list %}
+                    <tr>
+                        <td>{{ lists.name }}</td>
+                        <td>{{ lists.rola }}</td>
+                        <td>{{ lists.pobocka_id }}</td>
+                        <td>{{ lists.email }}</td>
+                        <td>{{ lists.heslo }}</td>
+                        <td>
+                            <a href="/delete/{{lists.id}}">Delete</a>
+                            <br>
+                            <a href="/update/{{lists.id}}">Update</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
 
-    <div class="form">
-        <form actions = '/' method = "POST">
-            Name:
-            <input type="text" name="name" id="name">
-            Rola:
-            <input type="text" name="rola" id="rola">
-            Pobocka:
-            <input type="text" name="pobocka" id="pobocka">
-            <input type="submit" value="Add task">
-        </form>
+        <div class="form">
+            <form actions = '/' method = "POST">
+                Name:
+                <input type="text" name="name" id="name">
+                Rola:
+                <input type="text" name="rola" id="rola">
+                Pobocka:
+                <input type="text" name="pobocka" id="pobocka">
+                Email:
+                <input type="text" name="email" id="email">
+                Heslo:
+                <input type="text" name="heslo" id="heslo">
+                <input type="submit" value="Add task">
+            </form>
+        </div>
+        {% endif %}
+    <div>
+        Uz si registrovany?
+        <a href="/login">Login</a>
     </div>
 </div>
 {% endblock %}

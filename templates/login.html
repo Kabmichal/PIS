@@ -1,0 +1,21 @@
+
+<div class="form">
+    <form actions = '/login' method = "POST">
+        Email:
+        <input type="text" name="email" id="email">
+        Heslo:
+        <input type="text" name="heslo" id="heslo">
+        <input type="submit" value="Login">
+    </form>
+</div>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flashes">
+            {% for message in messages %}
+                <div class="message_flash">{{ message }}</div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% block body %}{% endblock %}
+<a href="/">Spat</a>
