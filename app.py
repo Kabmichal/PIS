@@ -12,12 +12,18 @@ from model.produkt import *
 from model.zamestnanec import *
 from flask_login import LoginManager, login_user, current_user,logout_user
 import time
+from controllers.email_controller import *
+import datetime
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 login_manager = LoginManager()
 login_manager.init_app(app)
+scheduler = BackgroundScheduler()
+
 
 
 client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021zamestnanec?WSDL')
@@ -26,10 +32,18 @@ produkt = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021
 pobocka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021pobocka?WSDL')
 produkt_pobocka_wsdl = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt_pobocka?WSDL')
 email_wsdl_notify = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/NotificationServices/Email?WSDL")
-email_validation = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL")
 email_wsdl = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021email?WSDL")
 validator = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL")
 hash_func = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/TextCipher?WSDL")
+
+
+def print_date_time():
+    emails = email_wsdl.service.getAll()
+
+    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
+
+
+
 
 class MyForm(FlaskForm):
     name = StringField('name', validators=[DataRequired()])
@@ -41,6 +55,23 @@ def load_user(user_id):
             return zamestnanec
     return None
 
+def find_zamestnanec(pobocka_id):
+    najdeni_zamestnanci = client.service.getAll()
+    print("nasiel som tychto typkov: ")
+    print(najdeni_zamestnanci)
+    for najdeny_zamestnanec in najdeni_zamestnanci:
+        if((int(najdeny_zamestnanec.pobocka_id) == int(pobocka_id)) and (int(najdeny_zamestnanec.rola) == 1)):
+            return najdeny_zamestnanec
+    return None
+
+def find_product(task_produkt_id):
+    najdene_produkty = produkt_pobocka_wsdl.service.getAll()
+    for najdeny_produkt in najdene_produkty:
+        if int(najdeny_produkt.produkt_id) == int(task_produkt_id):
+            print("!!!!! nasiel som produkt !!!!!")
+            return najdeny_produkt
+    return None
+
 @app.route('/uprav_mnozstvo',methods = ['POST','GET'])
 def uprav_mnozstvo_pobocka():
     if request.method=='POST':
@@ -48,22 +79,26 @@ def uprav_mnozstvo_pobocka():
         task_produkt_id = request.form['produkt_id']
         task_mnozstvo = request.form['mnozstvo']
         produkt_server = produkt.service.getById(task_produkt_id)
-        print("id produktu ",task_produkt_id)
-        print(produkt.service.getAll())
-        print("4444444444444444 ",produkt_server)
-        najdeny_produkt = produkt_pobocka_wsdl.service.getByAttributeValue("produkt_id",task_produkt_id,produkt_pobocka_wsdl.service.getAll())
+        najdeny_produkt = find_product(task_produkt_id)
         if najdeny_produkt is not None:
             produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
-            print("zzzzzzzzzzzzzzzzzz")
-            print(najdeny_produkt)
-            print(najdeny_produkt[0].id)
-            najdeny_produkt = ProduktPobocka(int(najdeny_produkt[0]['id']),najdeny_produkt[0]['name'],int(najdeny_produkt[0]['produkt_id']),int(najdeny_produkt[0]['pobocka_id']),int(najdeny_produkt[0]['pocet_pobocka']),najdeny_produkt[0]['pokles_minima'])
+            print("najdeny produkt",najdeny_produkt)
+            najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
             if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>0:
                 hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
                 uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
-                if hodnota<produkt_server.min_pocet:
-                    print("malo!!!!!!!!!!!!!!!!!!")
-                    email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
+                print("pokles minima je ",najdeny_produkt.pokles_minima )
+                if ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
+                    najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
+                    print("najdeny zamestnanec je")
+                    print(najdeny_zamestnanec)
+                    if najdeny_zamestnanec is not None:
+                        posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
+                        uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
+                        scheduler.add_job(func=print_date_time, trigger="interval", seconds=3)
+                        scheduler.start()
+                        atexit.register(lambda: scheduler.shutdown())
+                        email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
             else:
                 flash("nizka hodnota")
                 print("nedostatok tovaru")
