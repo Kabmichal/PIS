@@ -109,21 +109,19 @@ def pridaj_do_objednavky(id):
     else:
         return redirect('/emails')
 
-@app.route('/emails/etiketa_update/<int:id>',methods = ['POST','GET'])
-def odober_etiketu(id):
+@app.route('/etiketa_update/<int:id>',methods = ['POST','GET'])
+def etiketa_update(id):
     print("som dnu")
     email = email_wsdl.service.getById(id)
     najdeny_mail = email_product(email.id_produkt)
     print("nasiel som mail",najdeny_mail)
-    if request.method == 'POST':
-        task_name = najdeny_mail.name
-        task_pocet = najdeny_mail.min_pocet
-        task_predaj = 0
-        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
-        print("upravil som etiketu")
-        return redirect('/emails')
-    else:
-        return redirect('/emails')
+    task_name = najdeny_mail.name
+    task_pocet = najdeny_mail.min_pocet
+    task_predaj = 0
+    uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+    print("upravil som etiketu")
+    return redirect('/emails')
+
 
 @app.route('/emails',methods = ['POST','GET'])
 def zobraz_emaily():

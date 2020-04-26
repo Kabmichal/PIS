@@ -11,9 +11,9 @@
 <body>
 {% for email in list_emails_products %}
     Produkt {{email.produkt_name}} klesol pod minimum
-  <button data-modal-target="#modal">Zobraz {{email.produkt_name}}</button>
+  <button data-modal-target="#modal{{email.email_id}}">Zobraz {{email.produkt_name}}</button>
   <br>
-  <div class="modal" id="modal">
+  <div class="modal" id="modal{{email.email_id}}">
     <div class="modal-header">
       <div class="modal-body">{{email.produkt_name}}</div>
       <button data-close-button class="modal-body">&times;</button>
