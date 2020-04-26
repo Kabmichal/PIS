@@ -35,13 +35,29 @@ email_wsdl_notify = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Notifi
 email_wsdl = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021email?WSDL")
 validator = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL")
 hash_func = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/TextCipher?WSDL")
+calendar = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL")
 
 
 def print_date_time():
     emails = email_wsdl.service.getAll()
+    for email in emails:
+        if email.vybaveny == 0:
+            email_date = email.datum
+            rozdiel = calendar.service.convertIntervalToDays(time.strftime("%Y-%m-%d"),email_date.strftime("%Y-%m-%d"))
+            if(rozdiel>3):
+                email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
+                print("Upozornenie veduceho")
+            else:
+                print("nepresli 3 dni, presli len ",rozdiel)
+             
 
-    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
-
+def get_emails_by_user(user_id):
+    emails = email_wsdl.service.getAll()
+    list_of_emails = []
+    for email in emails:
+        if email.id_zamestnanec == user_id:
+            list_of_emails.append(email)
+    return(list_of_emails)
 
 
 
@@ -71,6 +87,80 @@ def find_product(task_produkt_id):
             print("!!!!! nasiel som produkt !!!!!")
             return najdeny_produkt
     return None
+
+def email_product(task_produkt_id):
+    najdene_produkty = produkt.service.getAll()
+    for najdeny_produkt in najdene_produkty:
+        if int(najdeny_produkt.id) == int(task_produkt_id):
+            print("!!!!! nasiel som produkt !!!!!")
+            return najdeny_produkt
+    return None
+
+@app.route('/pridaj_do_objednavky/<int:id>',methods = ['POST','GET'])
+def pridaj_do_objednavky(id):
+    email = email_wsdl.service.getById(id)
+    najdeny_mail = email_product(email.id_produkt)
+    if request.method == 'POST':
+        task_name = najdeny_mail.name
+        task_pocet = najdeny_mail.min_pocet
+        task_predaj = 0
+        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+        return redirect('/emails')
+    else:
+        return redirect('/emails')
+
+@app.route('/emails/etiketa_update/<int:id>',methods = ['POST','GET'])
+def odober_etiketu(id):
+    print("som dnu")
+    email = email_wsdl.service.getById(id)
+    najdeny_mail = email_product(email.id_produkt)
+    print("nasiel som mail",najdeny_mail)
+    if request.method == 'POST':
+        task_name = najdeny_mail.name
+        task_pocet = najdeny_mail.min_pocet
+        task_predaj = 0
+        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+        print("upravil som etiketu")
+        return redirect('/emails')
+    else:
+        return redirect('/emails')
+
+@app.route('/emails',methods = ['POST','GET'])
+def zobraz_emaily():
+    list_emails_products = []
+    dictionary = {}
+    emails = get_emails_by_user(current_user.id)
+    print("maily su " , emails)
+    for email in emails:
+        najdeny_mail = email_product(email.id_produkt)
+        najdeny_pobocka = find_product(email.id_produkt)
+        print("najdeny mail je " , najdeny_mail," ma id ",email.id_produkt)
+        dictionary.update({
+                        "email_id" : email.id,
+                        "produkt_id":najdeny_mail.id,
+                        "produkt_name":najdeny_mail.name,
+                        "dalsi_predaj":najdeny_mail.dalsi_predaj,
+                        "min_pocet":najdeny_mail.min_pocet,
+                        "aktualny_pocet": najdeny_pobocka.pocet_pobocka
+                    })
+        list_emails_products.append(dictionary.copy())
+    print("list produktov ", list_emails_products)
+    return render_template('emails.html',list_emails_products=list_emails_products)
+
+"""
+@app.route('/emails/show/<int:id>', methods = ['GET','POST'])
+def show_email(id):
+    doruceny_email = email_wsdl.service.getById(id)
+    potrebny_produkt = produkt.wsdl.services.getById(doruceny_email.id_produkt)
+    if request.method == 'POST':
+        task_name = request.form['name']
+        task_pocet = request.form['min_pocet']
+        task_predaj = request.form['dalsi_predaj']
+        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+        return redirect('/vytvor_produkt')
+    else:
+        return render_template('produkt_update.html',vstupny_produkt=vstupny_produkt)
+"""
 
 @app.route('/uprav_mnozstvo',methods = ['POST','GET'])
 def uprav_mnozstvo_pobocka():
@@ -133,7 +223,7 @@ def add_pobocka():
             pobocky = []
         return render_template('pobocka.html',pobocky=pobocky)
 
-
+#https://codepen.io/Middi/pen/rJYOyz
 @app.route('/objednavka', methods = ['GET','POST'])
 def objednaj():
     if request.method == 'POST':

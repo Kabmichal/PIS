@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Modal</title>
+  <link href="/static/css/styles.css" rel="stylesheet">
+  <script defer src="/static/css/script.js"></script>
+</head>
+<body>
+{% for email in list_emails_products %}
+    Produkt {{email.produkt_name}} klesol pod minimum
+  <button data-modal-target="#modal">Zobraz {{email.produkt_name}}</button>
+  <br>
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-body">{{email.produkt_name}}</div>
+      <button data-close-button class="modal-body">&times;</button>
+    </div>
+    <div class="modal-body">
+      Nazov produktu: {{email.produkt_name}}
+      <br>
+      Dalsi predaj: {{email.dalsi_predaj}}
+      <br>
+      Minimalny pocet: {{email.min_pocet}}
+      <br>
+      Aktualny pocet: {{email.aktualny_pocet}}
+      <br>
+      <div class="form">
+        <form actions = '/pridaj_do_objednavky/{{email.email_id}}' method = "POST">
+        <input type="submit" value="Odober etiketu">
+        </form>
+      </div>
+      <!--<a href="/emails/etiketa_update/{{email.id}}">Odober etiketu</a>-->
+      <a href="/emails/pridaj_objednavka/{{email.id}}">Pridaj do objednavky</a>
+    </div>
+  </div>
+  <div id="overlay"></div>
+{% endfor %}
+</body>
+<a href="/">Spat</a>
+</html>
