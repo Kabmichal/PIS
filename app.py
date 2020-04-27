@@ -7,6 +7,7 @@ from controllers.zamestnanec_controller import *
 from controllers.produkt_controller import *
 from controllers.pobocka_controller import *
 from controllers.pobocka_produkt_controller import *
+from controllers.objednavka_controller import *
 from model.produktPobocka import *
 from model.produkt import *
 from model.zamestnanec import *
@@ -16,6 +17,7 @@ from controllers.email_controller import *
 import datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
+from controllers.produkt_objednavka_controller import *
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -36,6 +38,7 @@ email_wsdl = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team
 validator = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL")
 hash_func = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/TextCipher?WSDL")
 calendar = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL")
+produkt_objednavka = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt_objednavka?WSDL")
 
 
 def print_date_time():
@@ -96,29 +99,40 @@ def email_product(task_produkt_id):
             return najdeny_produkt
     return None
 
+def najdi_aktualnu_objednavku():
+    objednavky = objednavka.service.getAll()
+    if objednavky is not None:
+        for objednavka2 in objednavky:
+            if objednavka2.zamestnanec_id == current_user.id and objednavka2.odoslana == 0:
+                return objednavka2
+    return None
+
+
+
+
 @app.route('/pridaj_do_objednavky/<int:id>',methods = ['POST','GET'])
 def pridaj_do_objednavky(id):
-    email = email_wsdl.service.getById(id)
-    najdeny_mail = email_product(email.id_produkt)
-    if request.method == 'POST':
-        task_name = najdeny_mail.name
-        task_pocet = najdeny_mail.min_pocet
-        task_predaj = 0
-        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
-        return redirect('/emails')
-    else:
-        return redirect('/emails')
+    najdena_objednavka = najdi_aktualnu_objednavku()
+    print("dano")
+    print(najdena_objednavka)
+    if najdena_objednavka is None:
+        vytvor_objednavku("objednavka",current_user.id,0,objednavka)
+        najdena_objednavka=najdi_aktualnu_objednavku()
+    vytvor_produkt_objednavka("polozka",najdena_objednavka.id,id,produkt_objednavka)
+    return redirect('/emails')
 
 @app.route('/etiketa_update/<int:id>',methods = ['POST','GET'])
 def etiketa_update(id):
     print("som dnu")
     email = email_wsdl.service.getById(id)
     najdeny_mail = email_product(email.id_produkt)
+    print("QQQQQQQQQQ",najdeny_mail)
     print("nasiel som mail",najdeny_mail)
     task_name = najdeny_mail.name
     task_pocet = najdeny_mail.min_pocet
     task_predaj = 0
-    uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
+    produkt_id = najdeny_mail.id
+    uprav_produkt(task_name, task_pocet,task_predaj,produkt_id,produkt)
     print("upravil som etiketu")
     return redirect('/emails')
 
