@@ -159,51 +159,68 @@ def zobraz_emaily():
     print("list produktov ", list_emails_products)
     return render_template('emails.html',list_emails_products=list_emails_products)
 
-"""
-@app.route('/emails/show/<int:id>', methods = ['GET','POST'])
-def show_email(id):
-    doruceny_email = email_wsdl.service.getById(id)
-    potrebny_produkt = produkt.wsdl.services.getById(doruceny_email.id_produkt)
-    if request.method == 'POST':
-        task_name = request.form['name']
-        task_pocet = request.form['min_pocet']
-        task_predaj = request.form['dalsi_predaj']
-        uprav_produkt(task_name, task_pocet,task_predaj,id,produkt)
-        return redirect('/vytvor_produkt')
-    else:
-        return render_template('produkt_update.html',vstupny_produkt=vstupny_produkt)
-"""
+def find_concrete_mail(id_produkt):
+    all_emails = email_wsdl.service.getAll()
+    for email in all_emails:
+        if ((email.id_zamestnanec == current_user.id) and (email.id_produkt == id_produkt)):
+            return email
+    return None
+
+def najdi_polozku(email_id):
+    vsetky_polozky = produkt_objednavka.service.getAll()
+    for polozka in vsetky_polozky:
+        if polozka.email_id == email_id:
+            return polozka
+    return None
 
 @app.route('/uprav_mnozstvo',methods = ['POST','GET'])
 def uprav_mnozstvo_pobocka():
     if request.method=='POST':
-        flash("ok")
-        task_produkt_id = request.form['produkt_id']
-        task_mnozstvo = request.form['mnozstvo']
-        produkt_server = produkt.service.getById(task_produkt_id)
-        najdeny_produkt = find_product(task_produkt_id)
-        if najdeny_produkt is not None:
-            produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
-            print("najdeny produkt",najdeny_produkt)
-            najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
-            if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>0:
-                hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
-                uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
-                print("pokles minima je ",najdeny_produkt.pokles_minima )
-                if ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
-                    najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
-                    print("najdeny zamestnanec je")
-                    print(najdeny_zamestnanec)
-                    if najdeny_zamestnanec is not None:
-                        posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
-                        uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
-                        scheduler.add_job(func=print_date_time, trigger="interval", seconds=3)
-                        scheduler.start()
-                        atexit.register(lambda: scheduler.shutdown())
-                        email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
-            else:
-                flash("nizka hodnota")
-                print("nedostatok tovaru")
+        print("bol stlaceny ",request.form['button'])
+        if request.form['button'] == 'Odrataj':
+            flash("ok")
+            task_produkt_id = request.form['produkt_id']
+            task_mnozstvo = request.form['mnozstvo']
+            produkt_server = produkt.service.getById(task_produkt_id)
+            najdeny_produkt = find_product(task_produkt_id)
+            if najdeny_produkt is not None:
+                produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
+                print("najdeny produkt",najdeny_produkt)
+                najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
+                if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>0:
+                    hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
+                    uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
+                    print("pokles minima je ",najdeny_produkt.pokles_minima )
+                    if ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
+                        najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
+                        print("najdeny zamestnanec je")
+                        print(najdeny_zamestnanec)
+                        if najdeny_zamestnanec is not None:
+                            posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
+                            uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
+                            scheduler.add_job(func=print_date_time, trigger="interval", seconds=150000)
+                            scheduler.start()
+                            atexit.register(lambda: scheduler.shutdown())
+                            email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
+                else:
+                    flash("nizka hodnota")
+                    print("nedostatok tovaru")
+        elif request.form['button'] == 'Prirataj':
+            task_produkt_id = request.form['produkt_id']
+            task_mnozstvo = request.form['mnozstvo']
+            produkt_server = produkt.service.getById(task_produkt_id)
+            najdeny_produkt = find_product(task_produkt_id)
+            if najdeny_produkt is not None:
+                produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
+                najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
+                ziskany_produkt = produkt.service.getById(najdeny_produkt.produkt_id)
+                hodnota=(int(najdeny_produkt.pocet_pobocka)+int(task_mnozstvo))
+                uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,0,najdeny_produkt.id,produkt_pobocka_wsdl)
+                if (hodnota>ziskany_produkt.min_pocet):
+                    email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
+                    polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
+                    email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
+                    produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
         return redirect("/vytvor_pobocka2")
     else:
         flash("ok")
@@ -235,13 +252,57 @@ def add_pobocka():
             pobocky = []
         return render_template('pobocka.html',pobocky=pobocky)
 
+def najdi_produkt_pobocka(id_produkt,id_pobocka):
+    produkty_v_pobocke= produkt_pobocka_wsdl.service.getAll()
+    for produkt_v_pobocke in produkty_v_pobocke:
+        if((produkt_v_pobocke.produkt_id == id_produkt) and (produkt_v_pobocke.pobocka_id==id_pobocka)):
+            return produkt_v_pobocke
+    return None
+
+def odstran_vsetko(zoznam):
+    ziskana_objednavka = produkt_pobocka_wsdl.service.getById(zoznam['produkt_pobocka_id'])
+    uprav_produkt_pobocka(ziskana_objednavka.name, ziskana_objednavka.produkt_id,ziskana_objednavka.pobocka_id,zoznam['objednavane_mnozstvo'],0,ziskana_objednavka.id,produkt_pobocka_wsdl)
+    produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=zoznam['produkt_objednavka_id'])
+    email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=zoznam['email_id'])
+
 #https://codepen.io/Middi/pen/rJYOyz
 @app.route('/objednavka', methods = ['GET','POST'])
 def objednaj():
+    najdena_objednavka = najdi_aktualnu_objednavku()
+    dictionary = {}
+    list_of_orders = []
+    if najdena_objednavka is not None:
+        produkty_v_objednavke = produkt_objednavka.service.getAll()
+        for produkt_v_objednavke in produkty_v_objednavke:
+            if produkt_v_objednavke.objednavka_id == najdena_objednavka.id:
+                email_info = email_wsdl.service.getById(produkt_v_objednavke.email_id)
+                produkt_info = produkt.service.getById(email_info.id_produkt)
+                produkt_v_pobocke = najdi_produkt_pobocka(produkt_info.id,current_user.pobocka_id)
+                dictionary.update({
+                        "email_id" : email_info.id,
+                        "produkt_id":produkt_info.id,
+                        "produkt_name":produkt_info.name,
+                        "min_pocet":produkt_info.min_pocet,
+                        "objednavane_mnozstvo": int(produkt_info.min_pocet)*2,
+                        "aktualne_mnozstvo":produkt_v_pobocke.pocet_pobocka,
+                        "produkt_pobocka_id":produkt_v_pobocke.id,
+                        "produkt_objednavka_id":produkt_v_objednavke.id,
+                        "objednavka_id":produkt_v_objednavke.objednavka_id,
+                        "poznamka":" "
+
+                    })
+                list_of_orders.append(dictionary.copy())
+    print("!!!!POD!!!!")
+    print(list_of_orders)
     if request.method == 'POST':
-        return redirect('/')
+        for order in list_of_orders:
+            print("order",order)
+            order['poznamka'] = "objednane od subdodavatela"
+            odstran_vsetko(order)
+        objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=order['objednavka_id'])
+        return render_template('objednavka_fixnuta.html',list_of_orders=list_of_orders)
     else:
-        return render_template('objednavka.html')
+        return render_template('objednavka.html',list_of_orders=list_of_orders)
 
 @app.route('/vytvor_produkt', methods = ['GET','POST'])
 def vytvor_produkt():
