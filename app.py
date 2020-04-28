@@ -57,10 +57,12 @@ def print_date_time():
 def get_emails_by_user(user_id):
     emails = email_wsdl.service.getAll()
     list_of_emails = []
-    for email in emails:
-        if email.id_zamestnanec == user_id:
-            list_of_emails.append(email)
-    return(list_of_emails)
+    if emails is not None:
+        for email in emails:
+            if email.id_zamestnanec == user_id:
+                list_of_emails.append(email)
+        return(list_of_emails)
+    return None
 
 
 
@@ -142,20 +144,21 @@ def zobraz_emaily():
     list_emails_products = []
     dictionary = {}
     emails = get_emails_by_user(current_user.id)
-    print("maily su " , emails)
-    for email in emails:
-        najdeny_mail = email_product(email.id_produkt)
-        najdeny_pobocka = find_product(email.id_produkt)
-        print("najdeny mail je " , najdeny_mail," ma id ",email.id_produkt)
-        dictionary.update({
-                        "email_id" : email.id,
-                        "produkt_id":najdeny_mail.id,
-                        "produkt_name":najdeny_mail.name,
-                        "dalsi_predaj":najdeny_mail.dalsi_predaj,
-                        "min_pocet":najdeny_mail.min_pocet,
-                        "aktualny_pocet": najdeny_pobocka.pocet_pobocka
-                    })
-        list_emails_products.append(dictionary.copy())
+    print("maily su   !!!!! LLLLLLL PPPPPPP " , emails)
+    if emails is not None:
+        for email in emails:
+            najdeny_mail = email_product(email.id_produkt)
+            najdeny_pobocka = find_product(email.id_produkt)
+            print("najdeny mail je " , najdeny_mail," ma id ",email.id_produkt)
+            dictionary.update({
+                            "email_id" : email.id,
+                            "produkt_id":najdeny_mail.id,
+                            "produkt_name":najdeny_mail.name,
+                            "dalsi_predaj":najdeny_mail.dalsi_predaj,
+                            "min_pocet":najdeny_mail.min_pocet,
+                            "aktualny_pocet": najdeny_pobocka.pocet_pobocka
+                        })
+            list_emails_products.append(dictionary.copy())
     print("list produktov ", list_emails_products)
     return render_template('emails.html',list_emails_products=list_emails_products)
 
@@ -179,7 +182,7 @@ def uprav_mnozstvo_pobocka():
         print("bol stlaceny ",request.form['button'])
         if request.form['button'] == 'Odrataj':
             flash("ok")
-            task_produkt_id = request.form['produkt_id']
+            task_produkt_id = request.form.get('comp_select')
             task_mnozstvo = request.form['mnozstvo']
             produkt_server = produkt.service.getById(task_produkt_id)
             najdeny_produkt = find_product(task_produkt_id)
@@ -187,11 +190,18 @@ def uprav_mnozstvo_pobocka():
                 produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
                 print("najdeny produkt",najdeny_produkt)
                 najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
-                if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>0:
+                if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>=0:
                     hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
                     uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
                     print("pokles minima je ",najdeny_produkt.pokles_minima )
-                    if ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
+                    if (hodnota == 0):
+                        flash("hodnota je na 0 automaticke objednanie")
+                        uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,produkt_server.min_pocet*2,0,najdeny_produkt.id,produkt_pobocka_wsdl)
+                        email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
+                        polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
+                        email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
+                        produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
+                    elif ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
                         najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
                         print("najdeny zamestnanec je")
                         print(najdeny_zamestnanec)
@@ -205,8 +215,8 @@ def uprav_mnozstvo_pobocka():
                 else:
                     flash("nizka hodnota")
                     print("nedostatok tovaru")
-        elif request.form['button'] == 'Prirataj':
-            task_produkt_id = request.form['produkt_id']
+        elif request.form['button'] == 'Prirataj':                        
+            task_produkt_id = request.form.get('comp_select')
             task_mnozstvo = request.form['mnozstvo']
             produkt_server = produkt.service.getById(task_produkt_id)
             najdeny_produkt = find_product(task_produkt_id)
@@ -223,8 +233,19 @@ def uprav_mnozstvo_pobocka():
                     produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
         return redirect("/vytvor_pobocka2")
     else:
-        flash("ok")
-        return render_template('uprav_mnozstvo.html')
+        dictionary = {}
+        list_of_products = []
+        all_products = produkt_pobocka_wsdl.service.getAll()
+        for product in all_products:
+            if product.pobocka_id == current_user.pobocka_id:
+                produkt_na_pobocke = produkt.service.getById(product.produkt_id)
+                dictionary.update({
+                            "id" : produkt_na_pobocke.id,
+                            "meno":produkt_na_pobocke.name,
+                        })
+                list_of_products.append(dictionary.copy())
+        print(list_of_products)
+        return render_template('uprav_mnozstvo.html',list_of_products = list_of_products)
 
 @app.route('/vytvor_pobocka2',methods = ['POST','GET'])
 def add_pobocka():
@@ -238,19 +259,20 @@ def add_pobocka():
         else:
             print("pridaj produkt")
             task_name = request.form['nazov']
-            task_produkt_id = request.form['produkt_id']
-            task_pobocka_id= request.form['pobocka_id']
+            task_produkt_id = request.form.get('comp_select')
+            task_pobocka_id= request.form.get('comp_select2')
             task_pocet_pobocka = request.form['pocet_pobocka']
             task_pokles_minima = request.form['pokles_minima']
             pridaj_produkt_pobocka(task_name,task_produkt_id,task_pobocka_id,task_pocet_pobocka,task_pokles_minima,produkt_pobocka_wsdl)
         return redirect('/vytvor_pobocka2')
     else:
         pobocky = pobocka.service.getAll()
+        produkty = produkt.service.getAll()
         print("current user jeeeee ")
         print(current_user)
         if pobocky is None:
             pobocky = []
-        return render_template('pobocka.html',pobocky=pobocky)
+        return render_template('pobocka.html',pobocky=pobocky,produkty=produkty)
 
 def najdi_produkt_pobocka(id_produkt,id_pobocka):
     produkty_v_pobocke= produkt_pobocka_wsdl.service.getAll()
@@ -273,25 +295,26 @@ def objednaj():
     list_of_orders = []
     if najdena_objednavka is not None:
         produkty_v_objednavke = produkt_objednavka.service.getAll()
-        for produkt_v_objednavke in produkty_v_objednavke:
-            if produkt_v_objednavke.objednavka_id == najdena_objednavka.id:
-                email_info = email_wsdl.service.getById(produkt_v_objednavke.email_id)
-                produkt_info = produkt.service.getById(email_info.id_produkt)
-                produkt_v_pobocke = najdi_produkt_pobocka(produkt_info.id,current_user.pobocka_id)
-                dictionary.update({
-                        "email_id" : email_info.id,
-                        "produkt_id":produkt_info.id,
-                        "produkt_name":produkt_info.name,
-                        "min_pocet":produkt_info.min_pocet,
-                        "objednavane_mnozstvo": int(produkt_info.min_pocet)*2,
-                        "aktualne_mnozstvo":produkt_v_pobocke.pocet_pobocka,
-                        "produkt_pobocka_id":produkt_v_pobocke.id,
-                        "produkt_objednavka_id":produkt_v_objednavke.id,
-                        "objednavka_id":produkt_v_objednavke.objednavka_id,
-                        "poznamka":" "
+        if produkty_v_objednavke is not None:
+            for produkt_v_objednavke in produkty_v_objednavke:
+                if produkt_v_objednavke.objednavka_id == najdena_objednavka.id:
+                    email_info = email_wsdl.service.getById(produkt_v_objednavke.email_id)
+                    produkt_info = produkt.service.getById(email_info.id_produkt)
+                    produkt_v_pobocke = najdi_produkt_pobocka(produkt_info.id,current_user.pobocka_id)
+                    dictionary.update({
+                            "email_id" : email_info.id,
+                            "produkt_id":produkt_info.id,
+                            "produkt_name":produkt_info.name,
+                            "min_pocet":produkt_info.min_pocet,
+                            "objednavane_mnozstvo": int(produkt_info.min_pocet)*2,
+                            "aktualne_mnozstvo":produkt_v_pobocke.pocet_pobocka,
+                            "produkt_pobocka_id":produkt_v_pobocke.id,
+                            "produkt_objednavka_id":produkt_v_objednavke.id,
+                            "objednavka_id":produkt_v_objednavke.objednavka_id,
+                            "poznamka":" "
 
-                    })
-                list_of_orders.append(dictionary.copy())
+                        })
+                    list_of_orders.append(dictionary.copy())
     print("!!!!POD!!!!")
     print(list_of_orders)
     if request.method == 'POST':

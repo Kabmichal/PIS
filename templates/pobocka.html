@@ -43,10 +43,19 @@
         <form actions = '/vytvor_pobocka2' method = "POST">
             Nazov:
             <input type="text" name="nazov" id="nazov">
-            Id produkt:
-            <input type="text" name="produkt_id" id="produkt_id">
-            Id pobocka:
-            <input type="text" name="pobocka_id" id="pobocka_id">
+            Produkt:
+            <select name="comp_select" class="selectpicker form-control">
+                {% for produkt in produkty %}
+                <option value="{{ produkt.id }}">{{ produkt.name }}</option>
+                {% endfor %}
+            </select>
+            Pobocka:
+            <select name="comp_select2" class="selectpicker form-control">
+                {% for pobocka in pobocky %}
+                <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
+                {% endfor %}
+            </select>
+            <!--<input type="text" name="pobocka_id" id="pobocka_id">-->
             Pocet pobocka:
             <input type="text" name="pocet_pobocka" id="pocet_pobocka">
             Pokles minima

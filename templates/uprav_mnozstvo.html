@@ -5,11 +5,16 @@
 {% endblock %}
 
 {% block body %}
+<h1>Uprava mnozstva</h1>
 <div class="content">
        <div class="form">
         <form actions = '/vytvor_pobocka2' method = "POST">
             Produkt:
-            <input type="text" name="produkt_id" id="produkt_id">
+            <select name="comp_select" class="selectpicker form-control">
+                {% for produkt in list_of_products %}
+                <option value="{{ produkt.id }}">{{ produkt.meno }}</option>
+                {% endfor %}
+            </select>
             Mnozstvo:
             <input type="text" name="mnozstvo" id="mnozstvo">
             <input type="submit" value="Odrataj" name="button" id="Odrataj">

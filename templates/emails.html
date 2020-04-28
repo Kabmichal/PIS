@@ -9,6 +9,9 @@
   <script defer src="/static/css/script.js"></script>
 </head>
 <body>
+{% if list_emails_products|length < 1 %}
+            <h4 style="text-align: center;">Nie su k dispozicii ziadne upozornenia!</1>
+{% else %} 
 {% for email in list_emails_products %}
     Produkt {{email.produkt_name}} klesol pod minimum
   <button data-modal-target="#modal{{email.email_id}}">Zobraz {{email.produkt_name}}</button>
@@ -39,6 +42,9 @@
   </div>
   <div id="overlay"></div>
 {% endfor %}
+{% endif %}
 </body>
+<div>
 <a href="/">Spat</a>
+</div>
 </html>
