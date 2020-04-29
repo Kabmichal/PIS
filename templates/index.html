@@ -1,73 +1,87 @@
-{% extends 'base.html' %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
 
-{% block head %}
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6 lt8"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7 lt8"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8 lt8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="UTF-8" />
+        <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
+        <title>Login and Registration Form with HTML5 and CSS3</title>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+		<link href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        <link href="/static/css/register.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+           
+            <header>
+				
+            </header>
+            <section>				
+                <div id="container_demo" >
+                    <!-- hidden anchor to stop jump http://www.css3create.com/Astuce-Empecher-le-scroll-avec-l-utilisation-de-target#wrap4  -->
+                    <a class="hiddenanchor" id="toregister"></a>
+                    <a class="hiddenanchor" id="tologin"></a>
+                    <div id="wrapper">
+                        <div id="login" class="animate form">
+                            <form  action="mysuperscript.php" autocomplete="on"> 
+                                <h1>Prihlásenie</h1> 
+                                <p> 
+                                    <label for="username" class="uname" > Email </label>
+                                    <input id="username" name="username" required="required" type="text" placeholder="mymail@mail.com"/>
+                                </p>
+                                <p> 
+                                    <label for="password" class="youpasswd"> Heslo </label>
+                                    <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO" /> 
+                                </p>
+                                <p class="signin button"> 
+									<input type="submit" value="Prihlásiť"/> 
+								</p>
+                                <p class="change_link">
+									Not a member yet ?
+									<a href="#toregister" class="to_register">Join us</a>
+								</p>
+                            </form>
+                        </div>
 
-{% endblock %}
-
-{% block body %}
-<div class="content">
-    ahoj {{ current_user }}
-    {% if current_user.is_authenticated %}
-    <h1 style="text-align:center">Zoznam mien</h1>
-    <a href="/objednavka">Objednavka</a>
-    <a href="/vytvor_produkt">Produkt</a>
-    <a href="/vytvor_pobocka2">Pobocka</a>
-    <div>
-        <a href="/logout">Logout</a>
-    </div>
-    <div>
-        <a href="/emails">Upozornenia</a>
-    </div>
-    {% else %}
-        {% if client_list|length < 1 %}
-            <h4 style="text-align: center;">Nie su k dispozicii ziadny pouzivatelia, vytvor nejakeho kliknutim dole!</1>
-        {% else %} 
-            <table style="text-align: center;">
-                <tr>
-                    <th>Name</th>
-                    <th>Rola</th>
-                    <th>Pobocka</th>
-                    <th>Email</th>
-                    <th>Heslo</th>
-                    <th>Actions</th>
-                </tr>
-                {% for lists in client_list %}
-                    <tr>
-                        <td>{{ lists.name }}</td>
-                        <td>{{ lists.rola }}</td>
-                        <td>{{ lists.pobocka_id }}</td>
-                        <td>{{ lists.email }}</td>
-                        <td>{{ lists.heslo }}</td>
-                        <td>
-                            <a href="/delete/{{lists.id}}">Delete</a>
-                            <br>
-                            <a href="/update/{{lists.id}}">Update</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-
-        <div class="form">
-            <form actions = '/' method = "POST">
-                Name:
-                <input type="text" name="name" id="name">
-                Rola:
-                <input type="text" name="rola" id="rola">
-                Pobocka:
-                <input type="text" name="pobocka" id="pobocka">
-                Email:
-                <input type="text" name="email" id="email">
-                Heslo:
-                <input type="text" name="heslo" id="heslo">
-                <input type="submit" value="Add task">
-            </form>
+                        <div id="register" class="animate form">
+                            <form  action="mysuperscript.php" autocomplete="on"> 
+                                <h1> Sign up </h1> 
+                                <p> 
+                                    <label for="usernamesignup" class="uname" >Your username</label>
+                                    <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="mysuperusername690" />
+                                </p>
+                                <p> 
+                                    <label for="emailsignup" class="youmail"  > Your email</label>
+                                    <input id="emailsignup" name="emailsignup" required="required" type="email" placeholder="mysupermail@mail.com"/> 
+                                </p>
+                                <p> 
+                                    <label for="passwordsignup" class="youpasswd" >Your password </label>
+                                    <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="eg. X8df!90EO"/>
+                                </p>
+                                <p> 
+                                    <label for="passwordsignup_confirm" class="youpasswd" >Please confirm your password </label>
+                                    <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO"/>
+                                </p>
+                                <p class="signin button"> 
+									<input type="submit" value="Sign up"/> 
+								</p>
+                                <p class="change_link">  
+									Already a member ?
+									<a href="#tologin" class="to_register"> Go and log in </a>
+								</p>
+                            </form>
+                        </div>
+						
+                    </div>
+                </div>  
+            </section>
         </div>
-        {% endif %}
-    <div>
-        Uz si registrovany?
-        <a href="/login">Login</a>
-    </div>
-</div>
-
-{% endblock %}
+    </body>
+</html>
