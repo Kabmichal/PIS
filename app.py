@@ -409,23 +409,42 @@ def login():
 def index():
     #try2_func()
     #get_names()
-    
-    if request.method=='POST':
-        task_name = request.form['name']
-        task_rola = request.form['rola']
-        task_pobocka = request.form['pobocka']
-        task_email = request.form['email']
-        task_heslo = request.form['heslo']
-        print("-------------------")
-        print(validator.service.validateEmail(task_email))
-        if validator.service.validateEmail(task_email):
+    print("bol odoslany request ",request.form)
+    if 'button' in request.form:
+        if 'Prihlásiť' in request.form['button']:
+        #if request.form['button'] == 'Prihlásiť':
+            zamestnanci = client.service.getAll()
+            task_email = request.form['username']
+            task_heslo = request.form['password']
             task_heslo = hash_func.service.encrypt_text(text=task_heslo,key=task_email)
-            try2_func(task_name,task_rola,task_pobocka,task_email,task_heslo,client)
-            flash("ucet uspesne vytvoreny")
+            print("hesielko ")
+            print(task_heslo)
+            for zamestnanec in zamestnanci:
+                if(zamestnanec.email == task_email and zamestnanec.heslo == task_heslo):
+                    actual_user = Zamestnanec(zamestnanec.id,zamestnanec.name,zamestnanec.rola,zamestnanec.email,zamestnanec.heslo,zamestnanec.is_authenticated,zamestnanec.pobocka_id)
+                    login_user(actual_user,force=True)
+                    print(type(current_user))
+                    print("aaaaaassssssaaaaa")
+                    print(current_user)
+                    return render_template('after_login.html')
+            flash("zle udaje")
             return redirect('/')
-        else:
-            flash("email nema validnu formu")
-            return redirect('/')
+        elif 'Registrovať' in request.form['button']:
+        #elif request.form['button'] == 'Registrovať':
+            task_email = request.form['emailsignup']
+            task_name = request.form['usernamesignup']
+            task_pobocka = request.form['pobocka_select']
+            task_heslo = request.form['passwordsignup']
+            print("-------------------")
+            print(validator.service.validateEmail(task_email))
+            if validator.service.validateEmail(task_email):
+                task_heslo = hash_func.service.encrypt_text(text=task_heslo,key=task_email)
+                try2_func(task_name,1,task_pobocka,task_email,task_heslo,client)
+                flash("ucet uspesne vytvoreny")
+                return redirect('/')
+            else:
+                flash("email nema validnu formu")
+                return redirect('/')
     else:
         client_list = client.service.getAll()
         if client_list is None:
@@ -434,7 +453,9 @@ def index():
         if(str(type(current_user))=="<class 'werkzeug.local.LocalProxy'>"):
             print("pasuje to")
             #skuska = Zamestnanec()
-        return render_template('index.html',client_list=client_list,current_user=current_user)
+        pobocky = pobocka.service.getAll()
+        print(pobocky)
+        return render_template('index.html',client_list=client_list,current_user=current_user,pobocky=pobocky)
 
 @app.route('/logout')
 def logout():

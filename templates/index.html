@@ -30,7 +30,7 @@
                     <a class="hiddenanchor" id="tologin"></a>
                     <div id="wrapper">
                         <div id="login" class="animate form">
-                            <form  action="mysuperscript.php" autocomplete="on"> 
+                            <form  action="/" autocomplete="on" method = "POST"> 
                                 <h1>Prihlásenie</h1> 
                                 <p> 
                                     <label for="username" class="uname" > Email </label>
@@ -41,7 +41,7 @@
                                     <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO" /> 
                                 </p>
                                 <p class="signin button"> 
-									<input type="submit" value="Prihlásiť"/> 
+									<input type="submit" value="Prihlásiť" name="button"/> 
 								</p>
                                 <p class="change_link">
 									Not a member yet ?
@@ -51,26 +51,30 @@
                         </div>
 
                         <div id="register" class="animate form">
-                            <form  action="mysuperscript.php" autocomplete="on"> 
-                                <h1> Sign up </h1> 
+                            <form  action="/" autocomplete="on" method = "POST"> 
+                                <h1> Registrácia </h1> 
                                 <p> 
-                                    <label for="usernamesignup" class="uname" >Your username</label>
+                                    <label for="usernamesignup" class="uname" >Meno</label>
                                     <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="mysuperusername690" />
                                 </p>
                                 <p> 
-                                    <label for="emailsignup" class="youmail"  > Your email</label>
+                                    <label for="emailsignup" class="youmail"  > Email</label>
                                     <input id="emailsignup" name="emailsignup" required="required" type="email" placeholder="mysupermail@mail.com"/> 
                                 </p>
                                 <p> 
-                                    <label for="passwordsignup" class="youpasswd" >Your password </label>
+                                    <label for="passwordsignup" class="youpasswd" >Heslo </label>
                                     <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="eg. X8df!90EO"/>
                                 </p>
                                 <p> 
-                                    <label for="passwordsignup_confirm" class="youpasswd" >Please confirm your password </label>
-                                    <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO"/>
+                                    <label for="passwordsignup_confirm">Pobocka </label>
+                                    <select name="pobocka_select" class="selectpicker form-control">
+                                    {% for pobocka in pobocky %}
+                                        <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
+                                    {% endfor %}
+                                    </select>
                                 </p>
                                 <p class="signin button"> 
-									<input type="submit" value="Sign up"/> 
+									<input type="submit" value="Registrovať" name="button"/> 
 								</p>
                                 <p class="change_link">  
 									Already a member ?
