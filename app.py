@@ -25,6 +25,7 @@ app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
 login_manager = LoginManager()
 login_manager.init_app(app)
 scheduler = BackgroundScheduler()
+condition = True
 
 
 
@@ -208,8 +209,10 @@ def uprav_mnozstvo_pobocka():
                         if najdeny_zamestnanec is not None:
                             posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
                             uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
-                            scheduler.add_job(func=print_date_time, trigger="interval", seconds=150000)
-                            scheduler.start()
+                            if condition == True:
+                                scheduler.add_job(func=print_date_time, trigger="interval", seconds=150000)
+                                scheduler.start()
+                                condition = False  
                             atexit.register(lambda: scheduler.shutdown())
                             email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
                 else:
@@ -286,6 +289,11 @@ def odstran_vsetko(zoznam):
     uprav_produkt_pobocka(ziskana_objednavka.name, ziskana_objednavka.produkt_id,ziskana_objednavka.pobocka_id,zoznam['objednavane_mnozstvo'],0,ziskana_objednavka.id,produkt_pobocka_wsdl)
     produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=zoznam['produkt_objednavka_id'])
     email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=zoznam['email_id'])
+
+@app.route('/after_login',methods = ['POST','GET'])
+def zobraz_main_page():
+    return render_template('after_login.html')
+
 
 #https://codepen.io/Middi/pen/rJYOyz
 @app.route('/objednavka', methods = ['GET','POST'])
@@ -426,7 +434,7 @@ def index():
                     print(type(current_user))
                     print("aaaaaassssssaaaaa")
                     print(current_user)
-                    return render_template('after_login.html')
+                    return redirect('/after_login')
             flash("zle udaje")
             return redirect('/')
         elif 'Registrovať' in request.form['button']:

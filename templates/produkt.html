@@ -1,10 +1,35 @@
-{% extends 'base.html' %}
+<link href="/static/css/login.css" rel="stylesheet">
+<section class="section section--menu" id="Prospero">
 
-{% block head %}
+    <header class="navbar navbar-fixed-top navbar-inverse">
+        <h1 class="section__title">Zásobovanie</h1>
 
-{% endblock %}
+	<nav class="menu menu--prospero">
 
-{% block body %}
+		<ul class="menu__list">
+			<li class="menu__item">
+				<a href='/after_login'class="menu__link">Domov</a>
+			</li>
+			<li class="menu__item">
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+			</li>
+			<li class="menu__item menu__item--current">
+				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
+			</li>
+			<li class="menu__item">
+				<a href='/uprav_mnozstvo' class="menu__link">Uprav množstvo</a>
+            </li>
+            <li class="menu__item">
+				<a href='/objednavka' class="menu__link">Zobraz objednávku</a>
+            </li>
+            <li class="menu__item">
+				<a href='/emails' class="menu__link">Zobraz upozornenia</a>
+			</li>
+		</ul>
+		
+	</nav>
+
+</section>
 <div class="content">
     {% if produkt_list|length < 1 %}
     <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
@@ -43,4 +68,3 @@
     </div>
     <a href="/">Spat</a>
 </div>
-{% endblock %}
