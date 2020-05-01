@@ -1,37 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link href="/static/css/login.css" rel="stylesheet">
+<link href="/static/css/login.css" rel="stylesheet">
 <section class="section section--menu" id="Prospero">
 
   <header class="navbar navbar-fixed-top navbar-inverse">
     <h1 class="section__title">Zásobovanie</h1>
 
-	<nav class="menu menu--prospero">
+    <nav class="menu menu--prospero">
 
-		<ul class="menu__list">
-			<li class="menu__item">
-				<a href='/after_login'class="menu__link">Domov</a>
-			</li>
-			<li class="menu__item">
-				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
-			</li>
-			<li class="menu__item">
-				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
-			</li>
-			<li class="menu__item">
-				<a href='/uprav_mnozstvo' class="menu__link">Uprav množstvo</a>
-            </li>
-            <li class="menu__item">
-				<a href='/objednavka' class="menu__link">Zobraz objednávku</a>
-            </li>
-            <li class="menu__item menu__item--current">
-				<a href='/emails' class="menu__link">Zobraz upozornenia</a>
-			</li>
-		</ul>
-		
-	</nav>
-
+      <ul class="menu__list">
+        <li class="menu__item">
+          <a href='/after_login'class="menu__link">Domov</a>
+        </li>
+        <li class="menu__item">
+          <a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+        </li>
+        <li class="menu__item">
+          <a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
+        </li>
+        <li class="menu__item">
+          <a href='/uprav_mnozstvo' class="menu__link">Uprav množstvo</a>
+              </li>
+              <li class="menu__item">
+          <a href='/objednavka' class="menu__link">Zobraz objednávku</a>
+              </li>
+              <li class="menu__item menu__item--current">
+          <a href='/emails' class="menu__link">Zobraz upozornenia</a>
+        </li>
+      </ul>
+      
+    </nav>
+  </header>
+<head>
 </section>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +38,6 @@
   <link href="/static/css/styles.css" rel="stylesheet">
   <script defer src="/static/css/script.js"></script>
 </head>
-<body>
 {% if list_emails_products|length < 1 %}
             <h4 style="text-align: center;">Nie su k dispozicii ziadne upozornenia!</1>
 {% else %} 
@@ -75,8 +72,6 @@
   <div id="overlay"></div>
 {% endfor %}
 {% endif %}
-</body>
 <div>
-<a href="/">Spat</a>
-</div>
-</html>
+  <a href="/">Spat</a>
+  </div>

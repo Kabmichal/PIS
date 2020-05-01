@@ -13,15 +13,15 @@
 	padding: 0;
 	list-style: none;
 	text-align: center;
+	margin-left: 130px;
 }
-
 .menu__item {
 	display: block;
 	margin: 1em 0;
 }
 
 .menu__link {
-	font-size: 1.05em;
+	font-size: 20px;
 	font-weight: bold;
 	display: block;
 	padding: 1em;
@@ -82,15 +82,17 @@
 .section__title {
 	color: #066A75;
 	text-align: center;
+	font-size: 40px;
+	font-family: Helvetica;
 }
 
 .navbar-inverse {
     background-color:rgba(255,255,255,0.8);
-    border-color: #090909;
+	border-color: #090909;
 }
 
 .navbar-fixed-top {
-    top: 0;
+    top: -15;
     border-width: 0 0 1px;
 }
 .navbar-fixed-top, .navbar-fixed-bottom {
@@ -132,4 +134,8 @@ body {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-   }
+	background-attachment: fixed 
+}
+.table{
+align-items: center;
+}

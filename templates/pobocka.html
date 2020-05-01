@@ -30,30 +30,29 @@
 	</nav>
 
 </section>
+<link href="/static/css/tables.css" rel="stylesheet">
 <div class="content">
     {% if pobocky|length < 1 %}
     <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
     {% else %} 
-    <table style="text-align: center;">
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
+    <table class="container">
+        <thead>
+            <th>Poradie</th>
+            <th>Názov</th>
             <th>Adresa</th>
-            <th>Actions</th>
         </tr>
+    </thead>
+    <tbody>
         {% for pobocka in pobocky %}
             <tr>
                 <td>{{ pobocka.id }}</td>
                 <td>{{ pobocka.name }}</td>
                 <td>{{ pobocka.adresa }}</td>
-                <td>
-                    <a href="/delete_produkt/{{pobocka.id}}">Delete</a>
-                    <br>
-                    <a href="/update_produkt/{{pobocka.id}}">Update</a>
-                </td>
             </tr>
         {% endfor %}
-    </table>
+    </tbody>
+</table>
+</div>
     {% endif %}
     <div class="form">
         <form actions = '/vytvor_pobocka2' method = "POST">
