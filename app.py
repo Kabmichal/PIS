@@ -18,6 +18,9 @@ import datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from controllers.produkt_objednavka_controller import *
+from flask_googlemaps import GoogleMaps
+from flask_googlemaps import Map
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -26,7 +29,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 scheduler = BackgroundScheduler()
 condition = True
-
+GoogleMaps(app)
 
 
 client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021zamestnanec?WSDL')
@@ -332,7 +335,34 @@ def odstran_vsetko(zoznam):
 
 @app.route('/after_login',methods = ['POST','GET'])
 def zobraz_main_page():
-    return render_template('after_login.html')
+    name = current_user.name
+    adresa = pobocka.service.getById(current_user.pobocka_id)
+    mymap = Map(
+        identifier="view-side",
+        lat=47.98544,
+        lng=18.16195,
+        markers=[(47.98544, 18.16195)]
+    )
+    sndmap = Map(
+        identifier="sndmap",
+        lat=47.98544,
+        lng=18.16195,
+        markers=[
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+             'lat': 47.98544,
+             'lng': 18.16195,
+             'infobox': "<b>Hello World</b>"
+          },
+          {
+             'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+             'lat': 47.98344,
+             'lng': 18.26195,
+             'infobox': "<b>Hello World from other place</b>"
+          }
+        ]
+    )
+    return render_template('after_login.html', mymap=mymap, sndmap=sndmap,name=name,adresa = adresa)
 
 
 #https://codepen.io/Middi/pen/rJYOyz

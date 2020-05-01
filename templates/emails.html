@@ -44,10 +44,22 @@
 {% if list_emails_products|length < 1 %}
             <h4 style="text-align: center;">Nie su k dispozicii ziadne upozornenia!</1>
 {% else %} 
+<link href="/static/css/tables.css" rel="stylesheet">
+<table class="container">
+  <thead>
+    <th>Informácia</th>
+    <th>Produkt</th>
+    <th>Zobrazenie</th>
+</thead>
+<tbody>
 {% for email in list_emails_products %}
-    Produkt {{email.produkt_name}} klesol pod minimum
-  <button data-modal-target="#modal{{email.email_id}}">Zobraz {{email.produkt_name}}</button>
-  <br>
+<tr>
+  <td>Pokles minima</td>
+  <td>{{email.produkt_name}}</td>
+  <td>
+    <button data-modal-target="#modal{{email.email_id}}">Zobraz {{email.produkt_name}}</button>
+  </td>
+</tr>
   <div class="modal" id="modal{{email.email_id}}">
     <div class="modal-header">
       <div class="modal-body">{{email.produkt_name}}</div>
@@ -74,7 +86,6 @@
   </div>
   <div id="overlay"></div>
 {% endfor %}
+</tbody>
+</table>
 {% endif %}
-<div>
-  <a href="/">Spat</a>
-  </div>

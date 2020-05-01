@@ -33,17 +33,33 @@
 	</nav>
 
 </section>
+<link href="/static/css/tables.css" rel="stylesheet">
+<table class="container">
+    <div class="form">
+        <form actions = '/vytvor_produkt' method = "POST">
+            <th>Nazov:
+            <input type="text" name="name" id="name">
+                  Min pocet:
+            <input type="text" name="min_pocet" id="min_pocet">
+            Dalsi predaj:
+            <input type="text" name="dalsi_predaj" id="dalsi_predaj">
+            <input type="submit" value="Pridaj produkt">
+        </th>
+        </form>
+    </div>
 <div class="content">
     {% if produkt_list|length < 1 %}
     <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
     {% else %} 
-    <table style="text-align: center;">
-        <tr>
-            <th>Name</th>
-            <th>Min Pocet</th>
-            <th>Dalsi predaj</th>
-            <th>Actions</th>
+    <table class="container">
+        <thead>
+            <th>Názov</th>
+            <th>Minimálny počet</th>
+            <th>Ďalší predaj</th>
+            <th>Akcia</th>
         </tr>
+    </thead>
+    <tbody>
         {% for produkt in produkt_list %}
             <tr>
                 <td>{{ produkt.name }}</td>
@@ -56,18 +72,8 @@
                 </td>
             </tr>
         {% endfor %}
+    </tbody>
     </table>
     {% endif %}
-    <div class="form">
-        <form actions = '/vytvor_produkt' method = "POST">
-            Nazov:
-            <input type="text" name="name" id="name">
-            Min pocet:
-            <input type="text" name="min_pocet" id="min_pocet">
-            Dalsi predaj:
-            <input type="text" name="dalsi_predaj" id="dalsi_predaj">
-            <input type="submit" value="Pridaj produkt">
-        </form>
-    </div>
     <a href="/">Spat</a>
 </div>

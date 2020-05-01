@@ -30,7 +30,14 @@
 		
 	</nav>
 	</header>
-	<body>
-
-	</body>
 </section>
+<head>
+    {{"decoupled-map"|googlemap_js(47.98544, 18.16195, markers=[(47.98544,
+    18.16195)])}} {{mymap.js}} {{sndmap.js}}
+  </head>
+  <body>
+    <h1>Vitaj {{ name }}</h1>
+
+    <h2>Tvoja pobočka je v {{adresa.adresa}}</h2>
+    {{"decoupled-map"|googlemap_html(47.98544, 18.16195)}}
+  </body>
