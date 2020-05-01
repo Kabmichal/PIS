@@ -24,6 +24,9 @@
             </li>
             <li class="menu__item">
 				<a href='/emails' class="menu__link">Zobraz upozornenia</a>
+            </li>
+            <li class="menu__item ">
+				<a href='/pridaj_produkt' class="menu__link">Pridaj produkt</a>
 			</li>
 		</ul>
 		
@@ -31,6 +34,15 @@
 
 </section>
 <link href="/static/css/tables.css" rel="stylesheet">
+<div class="form">
+    <form actions = '/vytvor_pobocka2' method = "POST">
+        Nazov:
+        <input type="text" name="name" id="name">
+        Adresa:
+        <input type="text" name="adresa" id="adresa">
+        <input type="submit" value="Pridaj pobocku" name="button" id="pridaj_pobocku">
+    </form>
+</div>
 <div class="content">
     {% if pobocky|length < 1 %}
     <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>
@@ -54,39 +66,6 @@
 </table>
 </div>
     {% endif %}
-    <div class="form">
-        <form actions = '/vytvor_pobocka2' method = "POST">
-            Nazov:
-            <input type="text" name="name" id="name">
-            Adresa:
-            <input type="text" name="adresa" id="adresa">
-            <input type="submit" value="Pridaj pobocku" name="button" id="pridaj_pobocku">
-        </form>
-    </div>
-    <div class="form">
-        <form actions = '/vytvor_pobocka2' method = "POST">
-            Nazov:
-            <input type="text" name="nazov" id="nazov">
-            Produkt:
-            <select name="comp_select" class="selectpicker form-control">
-                {% for produkt in produkty %}
-                <option value="{{ produkt.id }}">{{ produkt.name }}</option>
-                {% endfor %}
-            </select>
-            Pobocka:
-            <select name="comp_select2" class="selectpicker form-control">
-                {% for pobocka in pobocky %}
-                <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
-                {% endfor %}
-            </select>
-            <!--<input type="text" name="pobocka_id" id="pobocka_id">-->
-            Pocet pobocka:
-            <input type="text" name="pocet_pobocka" id="pocet_pobocka">
-            Pokles minima
-            <input type="text" name="pokles_minima" id="pokles_minima">
-            <input type="submit" value="Pridaj produkt" name="button" id="pridaj_produkt">
-        </form>
-    </div>
         <div>
         <a href="/uprav_mnozstvo">Uprav mnozstvo</a>
         </div>

@@ -250,6 +250,46 @@ def uprav_mnozstvo_pobocka():
         print(list_of_products)
         return render_template('uprav_mnozstvo.html',list_of_products = list_of_products)
 
+
+
+@app.route('/pridaj_produkt',methods = ['POST','GET'])
+def vytvor_produkt2():
+    if request.method=='POST':
+        print("pridaj produkt")
+        task_name = request.form['nazov']
+        task_produkt_id = request.form.get('comp_select')
+        task_pobocka_id= request.form.get('comp_select2')
+        task_pocet_pobocka = request.form['pocet_pobocka']
+        task_pokles_minima = request.form['pokles_minima']
+        pridaj_produkt_pobocka(task_name,task_produkt_id,task_pobocka_id,task_pocet_pobocka,task_pokles_minima,produkt_pobocka_wsdl)
+        return redirect('/pridaj_produkt')
+    else:
+        pobocky = pobocka.service.getAll()
+        produkty = produkt.service.getAll()
+        print("current user jeeeee ")
+        print(current_user)
+        if pobocky is None:
+            pobocky = []
+        dictionary = {}
+        array = []
+        produkty_pobocka = produkt_pobocka_wsdl.service.getAll()
+        i=1
+        for produkt_pobocka in produkty_pobocka:
+            if produkt_pobocka.pobocka_id == current_user.pobocka_id:
+                produkt_zoznam = produkt.service.getById(produkt_pobocka.produkt_id)
+                pobocka_zoznam = pobocka.service.getById(produkt_pobocka.pobocka_id)
+                dictionary.update({
+                            "cislo" : i,
+                            "produkt_nazov":produkt_zoznam.name,
+                            "pobocka_nazov":pobocka_zoznam.name,
+                            "adresa": pobocka_zoznam.adresa
+                        })
+                i+=1
+                array.append(dictionary.copy())
+        print("ppppppoooollleee je ",array)
+        return render_template('pridaj_produkt.html',pobocky=pobocky,produkty=produkty,array=array)
+
+
 @app.route('/vytvor_pobocka2',methods = ['POST','GET'])
 def add_pobocka():
     if request.method=='POST':

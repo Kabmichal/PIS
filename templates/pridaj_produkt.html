@@ -1,0 +1,78 @@
+<link href="/static/css/login.css" rel="stylesheet">
+<section class="section section--menu" id="Prospero">
+
+    <header class="navbar navbar-fixed-top navbar-inverse">
+        <h1 class="section__title">Zásobovanie</h1>
+
+	<nav class="menu menu--prospero">
+
+		<ul class="menu__list">
+			<li class="menu__item">
+				<a href='/after_login'class="menu__link">Domov</a>
+			</li>
+			<li class="menu__item">
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+			</li>
+			<li class="menu__item">
+				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
+			</li>
+			<li class="menu__item">
+				<a href='/uprav_mnozstvo' class="menu__link">Uprav množstvo</a>
+            </li>
+            <li class="menu__item">
+				<a href='/objednavka' class="menu__link">Zobraz objednávku</a>
+            </li>
+            <li class="menu__item">
+				<a href='/emails' class="menu__link">Zobraz upozornenia</a>
+            </li>
+            <li class="menu__item menu__item--current">
+				<a href='/pridaj_produkt' class="menu__link">Pridaj produkt</a>
+			</li>
+		</ul>
+		
+	</nav>
+
+</section>
+<link href="/static/css/tables.css" rel="stylesheet">
+<div class="form">
+    <form actions = '/vytvor_pobocka2' method = "POST">
+        Nazov:
+        <input type="text" name="nazov" id="nazov">
+        Produkt:
+        <select name="comp_select" class="selectpicker form-control">
+            {% for produkt in produkty %}
+            <option value="{{ produkt.id }}">{{ produkt.name }}</option>
+            {% endfor %}
+        </select>
+        Pobocka:
+        <select name="comp_select2" class="selectpicker form-control">
+            {% for pobocka in pobocky %}
+            <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
+            {% endfor %}
+        </select>
+        <!--<input type="text" name="pobocka_id" id="pobocka_id">-->
+        Pocet pobocka:
+        <input type="text" name="pocet_pobocka" id="pocet_pobocka">
+        Pokles minima
+        <input type="text" name="pokles_minima" id="pokles_minima">
+        <input type="submit" value="Pridaj produkt" name="button" id="pridaj_produkt">
+    </form>
+</div>
+<table class="container">
+    <thead>
+        <th>Poradie</th>
+        <th>Názov</th>
+        <th>Pobocka</th>
+        <th>Adresa</th>
+    </tr>
+</thead>
+<tbody>
+    {% for pole in array %}
+        <tr>
+            <td>{{ pole.cislo }}</td>
+            <td>{{ pole.produkt_nazov }}</td>
+            <td>{{ pole.pobocka_nazov }}</td>
+            <td>{{ pole.adresa}}</td>
+        </tr>
+    {% endfor %}
+</tbody>

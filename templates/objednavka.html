@@ -24,40 +24,46 @@
             </li>
             <li class="menu__item">
 				<a href='/emails' class="menu__link">Zobraz upozornenia</a>
+            </li>
+            <li class="menu__item ">
+				<a href='/pridaj_produkt' class="menu__link">Pridaj produkt</a>
 			</li>
 		</ul>
 		
 	</nav>
 
 </section>
+<link href="/static/css/tables.css" rel="stylesheet">
 <h1>Objednavka!</h1>
-<table style="text-align: center;">
     {% if list_of_orders|length < 1 %}
     <h4 style="text-align: center;">Objednavka neobsahuje ziadne polozky</1>
     {% else %} 
-    <tr>
-        <th>email_id</th>
-        <th>produkt_id</th>
-        <th>min_pocet</th>
-        <th>objednavane_mnozstvo</th>
-        <th>aktualne_mnozstvo</th>
-        <th>produkt_pobocka_id</th>
-        <th>produkt_name</th>
-        <th>produkt_objednavka</th>
-    </tr>
-    {% for order in list_of_orders %}
-        <tr>
-            <td>{{ order.email_id }}</td>
-            <td>{{ order.produkt_id }}</td>
-            <td>{{ order.min_pocet }}</td>
-            <td>{{ order.objednavane_mnozstvo }}</td>
-            <td>{{ order.aktualne_mnozstvo }}</td>
-            <td>{{ order.produkt_pobocka_id }}</td>
-            <td>{{ order.produkt_name }}</td>
-            <td>{{ order.produkt_objednavka_id }}</td>
-        </tr>
-    {% endfor %}
-</table>
+    <table class="container">
+        <thead>
+            <th>email_id</th>
+            <th>produkt_id</th>
+            <th>min_pocet</th>
+            <th>objednavane_mnozstvo</th>
+            <th>aktualne_mnozstvo</th>
+            <th>produkt_pobocka_id</th>
+            <th>produkt_name</th>
+            <th>produkt_objednavka</th>
+        </thead>>
+        <tbody>
+            {% for order in list_of_orders %}
+                <tr>
+                    <td>{{ order.email_id }}</td>
+                    <td>{{ order.produkt_id }}</td>
+                    <td>{{ order.min_pocet }}</td>
+                    <td>{{ order.objednavane_mnozstvo }}</td>
+                    <td>{{ order.aktualne_mnozstvo }}</td>
+                    <td>{{ order.produkt_pobocka_id }}</td>
+                    <td>{{ order.produkt_name }}</td>
+                    <td>{{ order.produkt_objednavka_id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 <div class="form">
     <form actions = '/objednavka' method = "POST">
     <input type="submit" value="Objednaj">
