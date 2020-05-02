@@ -42,9 +42,11 @@
   <script defer src="/static/css/script.js"></script>
 </head>
 {% if list_emails_products|length < 1 %}
-            <h4 style="text-align: center;">Nie su k dispozicii ziadne upozornenia!</1>
-{% else %} 
 <link href="/static/css/tables.css" rel="stylesheet">
+<div class="nadpis">
+  <h1>Nie sú k dispozícii žiadne upozornenia!</h1>
+</div>
+{% else %} 
 <table class="container">
   <thead>
     <th>Informácia</th>
@@ -74,11 +76,6 @@
       <br>
       Aktualny pocet: {{email.aktualny_pocet}}
       <br>
-      <div class="form">
-        <form actions = '/etiketa_update/{{email.email_id}}' method = "POST">
-        <input type="submit" value="Odober etiketu">
-        </form>
-      </div>
       <!--<a href="/emails/etiketa_update/{{email.id}}">Odober etiketu</a>-->
       <a href="/etiketa_update/{{email.email_id}}">Odober etiketu</a>
       <a href="/pridaj_do_objednavky/{{email.email_id}}">Pridaj do objednavky</a>

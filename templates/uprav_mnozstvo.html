@@ -11,7 +11,7 @@
 				<a href='/after_login'class="menu__link">Domov</a>
 			</li>
 			<li class="menu__item">
-				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobočku</a>
 			</li>
 			<li class="menu__item">
 				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
@@ -33,21 +33,34 @@
 	</nav>
 
 </section>
-<h1>Uprava mnozstva</h1>
-<div class="content">
-       <div class="form">
-        <form actions = '/vytvor_pobocka2' method = "POST">
-            Produkt:
-            <select name="comp_select" class="selectpicker form-control">
-                {% for produkt in list_of_products %}
-                <option value="{{ produkt.id }}">{{ produkt.meno }}</option>
-                {% endfor %}
-            </select>
-            Mnozstvo:
-            <input type="text" name="mnozstvo" id="mnozstvo">
-            <input type="submit" value="Odrataj" name="button" id="Odrataj">
-            <input type="submit" value="Prirataj" name="button" id="Prirataj">
-
-        </form>
+<link href="/static/css/tables.css" rel="stylesheet">
+<table class="container container-form">
+    <div class="nadpis">
+        <h1>Úprava množstva</h1>
     </div>
-</div>
+
+    <div class="content">
+        <div class="form">
+            <form actions = '/vytvor_pobocka2' method = "POST">
+                <th>
+                Produkt:
+                <select name="comp_select" class="selectpicker form-control">
+                    {% for produkt in list_of_products %}
+                    <option value="{{ produkt.id }}">{{ produkt.meno }}</option>
+                    {% endfor %}
+                </select>
+                </th>
+                <th>
+                Množstvo:
+                <input type="text" name="mnozstvo" id="mnozstvo">
+                </th>
+                <th>
+                <input type="submit" value="Odrataj" name="button" id="Odrataj">
+                </th>
+                <th>
+                <input type="submit" value="Prirataj" name="button" id="Prirataj">
+                </th>
+            </form>
+        </div>
+    </div>
+</table>

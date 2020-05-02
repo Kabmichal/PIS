@@ -32,7 +32,7 @@ font-family: Helvetica;
       width: 80%;
       margin: 0 auto;
   display: table;
-  padding: 0 0 8em 0;
+  padding: 0 0 2em 0;
 }
 
 .container td, .container th {
@@ -53,6 +53,9 @@ font-family: Helvetica;
 
 .container th {
       background-color: #1F2739;
+}
+.container-form{
+      text-align: center;
 }
 
 .container td:first-child { color: #FB667A; }
@@ -77,7 +80,25 @@ font-family: Helvetica;
       transition-property: all;
   transition-timing-function: line;
 }
+.nadpis{
+      text-align: center;
+      background-color: #1F2739;
+      margin-left: 200px;
+      margin-right: 200px;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      color: #A7A1AE;
+      font-family: Helvetica;
+}
+.form-button{
+      text-align: center;
+      background-color: #1F2739;
+      margin-left: 675px;
+      margin-right: 675px;
+      padding-top: 10px;
+      padding-bottom: 1px;
 
+}
 @media (max-width: 800px) {
 .container td:nth-child(4),
 .container th:nth-child(4) { display: none; }

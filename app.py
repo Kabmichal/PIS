@@ -43,6 +43,7 @@ validator = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Validator?WSDL
 hash_func = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/TextCipher?WSDL")
 calendar = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL")
 produkt_objednavka = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt_objednavka?WSDL")
+lokacia = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/GeoServices/CitiesSK?WSDL")
 
 
 def print_date_time():
@@ -263,7 +264,11 @@ def vytvor_produkt2():
         task_produkt_id = request.form.get('comp_select')
         task_pobocka_id= request.form.get('comp_select2')
         task_pocet_pobocka = request.form['pocet_pobocka']
-        task_pokles_minima = request.form['pokles_minima']
+        min_pocet=produkt.service.getById(task_produkt_id)
+        if task_pocet_pobocka>min_pocet.min_pocet:
+            task_pokles_minima = 0
+        else:
+            task_pokles_minima = 1
         pridaj_produkt_pobocka(task_name,task_produkt_id,task_pobocka_id,task_pocet_pobocka,task_pokles_minima,produkt_pobocka_wsdl)
         return redirect('/pridaj_produkt')
     else:
@@ -337,32 +342,36 @@ def odstran_vsetko(zoznam):
 def zobraz_main_page():
     name = current_user.name
     adresa = pobocka.service.getById(current_user.pobocka_id)
+    suradnice = lokacia.service.searchByName(adresa.adresa)
+    print(suradnice)
+    lat = suradnice[0]['coord_lat']
+    lon = suradnice[0]['coord_lon']
     mymap = Map(
         identifier="view-side",
-        lat=47.98544,
-        lng=18.16195,
-        markers=[(47.98544, 18.16195)]
+        lat=lat,
+        lng=lon,
+        markers=[(lat, lon)]
     )
     sndmap = Map(
         identifier="sndmap",
-        lat=47.98544,
-        lng=18.16195,
+        lat=lat,
+        lng=lon,
         markers=[
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-             'lat': 47.98544,
-             'lng': 18.16195,
+             'lat': lat,
+             'lng': lon,
              'infobox': "<b>Hello World</b>"
           },
           {
              'icon': 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-             'lat': 47.98344,
-             'lng': 18.26195,
+             'lat': lat,
+             'lng': lon,
              'infobox': "<b>Hello World from other place</b>"
           }
         ]
     )
-    return render_template('after_login.html', mymap=mymap, sndmap=sndmap,name=name,adresa = adresa)
+    return render_template('after_login.html', mymap=mymap, sndmap=sndmap,name=name,adresa = adresa,lat=lat,lon=lon)
 
 
 #https://codepen.io/Middi/pen/rJYOyz

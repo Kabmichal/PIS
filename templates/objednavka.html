@@ -11,7 +11,7 @@
 				<a href='/after_login'class="menu__link">Domov</a>
 			</li>
 			<li class="menu__item">
-				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobočku</a>
 			</li>
 			<li class="menu__item">
 				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
@@ -34,42 +34,37 @@
 
 </section>
 <link href="/static/css/tables.css" rel="stylesheet">
-<h1>Objednavka!</h1>
+
+    <div class="nadpis">
+        <h1>Objednávka</h1>
+    </div>
     {% if list_of_orders|length < 1 %}
-    <h4 style="text-align: center;">Objednavka neobsahuje ziadne polozky</1>
+    <div class="nadpis">
+        <h1>Objednávka neobsahuje žiadne položky</h1>
+    </div>
     {% else %} 
     <table class="container">
         <thead>
-            <th>email_id</th>
-            <th>produkt_id</th>
-            <th>min_pocet</th>
-            <th>objednavane_mnozstvo</th>
-            <th>aktualne_mnozstvo</th>
-            <th>produkt_pobocka_id</th>
-            <th>produkt_name</th>
-            <th>produkt_objednavka</th>
+            <th>Názov</th>
+            <th>Aktuálne množstvo</th>
+            <th>Objednávané množstvo</th>
+            <th>Minimálny počet</th>
         </thead>>
         <tbody>
             {% for order in list_of_orders %}
                 <tr>
-                    <td>{{ order.email_id }}</td>
-                    <td>{{ order.produkt_id }}</td>
-                    <td>{{ order.min_pocet }}</td>
-                    <td>{{ order.objednavane_mnozstvo }}</td>
-                    <td>{{ order.aktualne_mnozstvo }}</td>
-                    <td>{{ order.produkt_pobocka_id }}</td>
                     <td>{{ order.produkt_name }}</td>
-                    <td>{{ order.produkt_objednavka_id }}</td>
+                    <td>{{ order.aktualne_mnozstvo }}</td>
+                    <td>{{ order.objednavane_mnozstvo }}</td>
+                    <td>{{ order.min_pocet }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-<div class="form">
-    <form actions = '/objednavka' method = "POST">
-    <input type="submit" value="Objednaj">
-</form>
-</div>
+
+    <div class="form form-button">
+        <form actions = '/objednavka' method = "POST">
+        <input type="submit" value="Objednaj">
+        </form>
+    </div>
 {% endif %}
-<div>
-<a href="/">spat</a>
-</div>

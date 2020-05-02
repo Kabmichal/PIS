@@ -139,3 +139,7 @@ body {
 .table{
 align-items: center;
 }
+
+.showing{
+	margin-left: 550px;
+}

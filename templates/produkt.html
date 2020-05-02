@@ -11,7 +11,7 @@
 				<a href='/after_login'class="menu__link">Domov</a>
 			</li>
 			<li class="menu__item">
-				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobočku</a>
 			</li>
 			<li class="menu__item menu__item--current">
 				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
@@ -34,19 +34,27 @@
 
 </section>
 <link href="/static/css/tables.css" rel="stylesheet">
-<table class="container">
+<table class="container container-form">
     <div class="form">
         <form actions = '/vytvor_produkt' method = "POST">
-            <th>Nazov:
-            <input type="text" name="name" id="name">
-                  Min pocet:
-            <input type="text" name="min_pocet" id="min_pocet">
-            Dalsi predaj:
-            <input type="text" name="dalsi_predaj" id="dalsi_predaj">
-            <input type="submit" value="Pridaj produkt">
-        </th>
+            <th>
+                Názov:
+                <input type="text" name="name" id="name">
+            </th>
+            <th>
+                Počet:
+                <input type="text" name="min_pocet" id="min_pocet">
+            </th>
+            <th>
+                Ďalší predaj:
+                <input type="text" name="dalsi_predaj" id="dalsi_predaj">
+            </th>
+            <th>
+                <input type="submit" value="Pridaj produkt">
+            </th>
         </form>
     </div>
+</table>
 <div class="content">
     {% if produkt_list|length < 1 %}
     <h4 style="text-align: center;">Nie su k dispozicii ziadne produkty, vytvor nejakeho kliknutim dole!</1>

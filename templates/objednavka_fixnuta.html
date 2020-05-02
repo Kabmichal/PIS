@@ -33,35 +33,28 @@
 	</nav>
 
 </section>
-<h1>Objednavka!</h1>
-<table style="text-align: center;">
-    <tr>
-        <th>email_id</th>
-        <th>produkt_id</th>
-        <th>min_pocet</th>
-        <th>objednavane_mnozstvo</th>
-        <th>aktualne_mnozstvo</th>
-        <th>produkt_pobocka_id</th>
-        <th>produkt_name</th>
-        <th>produkt_objednavka</th>
-    </tr>
-    {% for order in list_of_orders %}
-        <tr>
-            <td>{{ order.email_id }}</td>
-            <td>{{ order.produkt_id }}</td>
-            <td>{{ order.min_pocet }}</td>
-            <td>{{ order.objednavane_mnozstvo }}</td>
-            <td>{{ order.aktualne_mnozstvo }}</td>
-            <td>{{ order.produkt_pobocka_id }}</td>
-            <td>{{ order.produkt_name }}</td>
-            <td>{{ order.produkt_objednavka_id }}</td>
-            <td>{{ order.poznamka }}</td>
-        </tr>
-    {% endfor %}
-</table>
-<div class="form">
-    <form actions = '/objednavka' method = "POST">
-    <input type="submit" value="Objednaj">
-</form>
+<link href="/static/css/tables.css" rel="stylesheet">
+<div class="nadpis">
+    <h1>Objednávka</h1>
 </div>
-<a href="/">spat</a>
+<table class="container">
+    <thead>
+        <th>Názov</th>
+        <th>Aktuálne množstvo</th>
+        <th>Objednávané množstvo</th>
+        <th>Minimálny počet</th>
+        <th>Poznámka</th>
+    </thead>
+    <tbody>
+    {% for order in list_of_orders %}
+    <tr>
+        <td>{{ order.produkt_name }}</td>
+        <td>{{ order.aktualne_mnozstvo }}</td>
+        <td>{{ order.objednavane_mnozstvo }}</td>
+        <td>{{ order.min_pocet }}</td>
+        <td>{{ order.poznamka }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+

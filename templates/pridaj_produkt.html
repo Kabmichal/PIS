@@ -11,7 +11,7 @@
 				<a href='/after_login'class="menu__link">Domov</a>
 			</li>
 			<li class="menu__item">
-				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobocku</a>
+				<a href='/vytvor_pobocka2' class="menu__link">Vytvor pobočku</a>
 			</li>
 			<li class="menu__item">
 				<a href='/vytvor_produkt' class="menu__link">Vytvor produkt</a>
@@ -34,35 +34,45 @@
 
 </section>
 <link href="/static/css/tables.css" rel="stylesheet">
-<div class="form">
-    <form actions = '/vytvor_pobocka2' method = "POST">
-        Nazov:
-        <input type="text" name="nazov" id="nazov">
-        Produkt:
-        <select name="comp_select" class="selectpicker form-control">
-            {% for produkt in produkty %}
-            <option value="{{ produkt.id }}">{{ produkt.name }}</option>
-            {% endfor %}
-        </select>
-        Pobocka:
-        <select name="comp_select2" class="selectpicker form-control">
-            {% for pobocka in pobocky %}
-            <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
-            {% endfor %}
-        </select>
-        <!--<input type="text" name="pobocka_id" id="pobocka_id">-->
-        Pocet pobocka:
-        <input type="text" name="pocet_pobocka" id="pocet_pobocka">
-        Pokles minima
-        <input type="text" name="pokles_minima" id="pokles_minima">
-        <input type="submit" value="Pridaj produkt" name="button" id="pridaj_produkt">
-    </form>
-</div>
+<table class="container container-form">
+    <div class="form">
+        <form actions = '/vytvor_pobocka2' method = "POST">
+            <th>
+            Názov:
+            <input type="text" name="nazov" id="nazov">
+            </th>
+            <th>
+            Produkt:
+            <select name="comp_select" class="selectpicker form-control">
+                {% for produkt in produkty %}
+                <option value="{{ produkt.id }}">{{ produkt.name }}</option>
+                {% endfor %}
+            </select>
+            </th>
+            <th>
+            Pobočka:
+            <select name="comp_select2" class="selectpicker form-control">
+                {% for pobocka in pobocky %}
+                <option value="{{ pobocka.id }}">{{ pobocka.adresa }}</option>
+                {% endfor %}
+            </select>
+            </th>
+            <!--<input type="text" name="pobocka_id" id="pobocka_id">-->
+            <th>
+            Počet pobočka:
+            <input type="text" name="pocet_pobocka" id="pocet_pobocka">
+            </th>
+            <th>
+            <input type="submit" value="Pridaj produkt" name="button" id="pridaj_produkt">
+            </th>
+        </form>
+    </div>
+</table>
 <table class="container">
     <thead>
         <th>Poradie</th>
         <th>Názov</th>
-        <th>Pobocka</th>
+        <th>Pobočka</th>
         <th>Adresa</th>
     </tr>
 </thead>
