@@ -31,7 +31,32 @@
 		</ul>
 		
 	</nav>
-
+    <head>
+        <meta charset="UTF-8">
+        <title>Dynamic Form Example</title>
+        <script
+                src="https://code.jquery.com/jquery-1.12.4.min.js"
+                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+                crossorigin="anonymous"></script>
+    </head>
+    <body>
+        Products:
+        <form action="/uprav_mnozstvo" method="post">
+            <div id="products"></div>
+            <button id="add_item" type="button">Add item</button>
+            <input type="submit" value="Produkty" name="button" id="Produkty">
+        </form>
+        <script>
+            $(document).ready(function(){
+                var count_item = 0;
+                $("#add_item").on("click", function(){
+                    count_item += 1;
+                    $("<input/>").attr({ type: "text", placeholder: "Enter product name",
+                        name: "item_"+count_item}).appendTo("#products").wrap($("<div/>"));
+                });
+            })
+        </script>
+    </body>
 </section>
 <link href="/static/css/tables.css" rel="stylesheet">
 <table class="container container-form">

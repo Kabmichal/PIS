@@ -1,4 +1,4 @@
-from flask import Flask,render_template,url_for,request,flash,redirect
+from flask import Flask,render_template,url_for,request,flash,redirect,jsonify, make_response
 from zeep import Client
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from wtforms.validators import DataRequired, Length
@@ -10,6 +10,8 @@ from controllers.pobocka_produkt_controller import *
 from controllers.objednavka_controller import *
 from model.produktPobocka import *
 from model.produkt import *
+import json
+import requests
 from model.zamestnanec import *
 from flask_login import LoginManager, login_user, current_user,logout_user
 import time
@@ -30,7 +32,6 @@ login_manager.init_app(app)
 scheduler = BackgroundScheduler()
 condition = True
 GoogleMaps(app)
-
 
 client = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021zamestnanec?WSDL')
 objednavka = Client(wsdl='http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021objednavka?WSDL')
@@ -218,10 +219,12 @@ def uprav_mnozstvo_pobocka():
                                 scheduler.start()
                                 condition = False  
                             atexit.register(lambda: scheduler.shutdown())
-                            email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Prenasame PIS :D ",message="R.I.P.")
+                            email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Tovar ",message="Od objednania tovaru presli 3 dni")
+                    return redirect("/vytvor_pobocka2")
                 else:
                     flash("nizka hodnota")
                     print("nedostatok tovaru")
+                    return redirect("/vytvor_pobocka2")
         elif request.form['button'] == 'Prirataj':                        
             task_produkt_id = request.form.get('comp_select')
             task_mnozstvo = request.form['mnozstvo']
@@ -238,7 +241,15 @@ def uprav_mnozstvo_pobocka():
                     polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
                     email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
                     produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
-        return redirect("/vytvor_pobocka2")
+            return redirect("/vytvor_pobocka2")
+        elif request.form['button'] == "Produkty":
+            print("som v nutry")
+            response_server = make_response(jsonify(request.form))
+            print(len(request.form))
+            for i in request.form:
+                if i!="button":
+                    print(request.form[i])
+            return redirect("/uprav_mnozstvo")
     else:
         dictionary = {}
         list_of_products = []
@@ -265,7 +276,7 @@ def vytvor_produkt2():
         task_pobocka_id= request.form.get('comp_select2')
         task_pocet_pobocka = request.form['pocet_pobocka']
         min_pocet=produkt.service.getById(task_produkt_id)
-        if task_pocet_pobocka>min_pocet.min_pocet:
+        if int(task_pocet_pobocka)>int(min_pocet.min_pocet):
             task_pokles_minima = 0
         else:
             task_pokles_minima = 1
