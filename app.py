@@ -196,6 +196,7 @@ def prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id
         produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
 
 def pokles(najdeny_produkt,hodnota):
+    global condition
     najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
     print("najdeny zamestnanec je")
     print(najdeny_zamestnanec)
@@ -222,28 +223,30 @@ def uprav_mnozstvo_pobocka():
     if request.method=='POST':
         print("bol stlaceny ",request.form['button'])
         if request.form['button'] == 'Odrataj':
-            flash("ok")
-            task_produkt_id = request.form.get('comp_select')
-            task_mnozstvo = request.form['mnozstvo']
-            produkt_server = produkt.service.getById(task_produkt_id)
-            najdeny_produkt = find_product(task_produkt_id)
-            if najdeny_produkt is not None:
-                produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
-                print("najdeny produkt",najdeny_produkt)
-                najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
-                if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>=0:
-                    hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
-                    uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
-                    print("pokles minima je ",najdeny_produkt.pokles_minima )
-                    if (hodnota == 0):
-                        autoorder(najdeny_produkt,produkt_server)
-                    elif ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
-                        pokles(najdeny_produkt,hodnota)
-                    return redirect("/vytvor_pobocka2")
-                else:
-                    flash("nizka hodnota")
-                    print("nedostatok tovaru")
-                    return redirect("/vytvor_pobocka2")
+            a = request.form.to_dict()
+            print(a)
+            for x in range(1,int(((len(a)-1)/2)+1)):
+                task_produkt_id = a.get("product_"+str(int(x)))
+                task_mnozstvo = a.get("item_"+str(int(x)))
+                flash("ok")
+                produkt_server = produkt.service.getById(task_produkt_id)
+                najdeny_produkt = find_product(task_produkt_id)
+                if najdeny_produkt is not None:
+                    produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
+                    print("najdeny produkt",najdeny_produkt)
+                    najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
+                    if (int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))>=0:
+                        hodnota=(int(najdeny_produkt.pocet_pobocka)-int(task_mnozstvo))
+                        uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
+                        print("pokles minima je ",najdeny_produkt.pokles_minima )
+                        if (hodnota == 0):
+                            autoorder(najdeny_produkt,produkt_server)
+                        elif ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
+                            pokles(najdeny_produkt,hodnota)
+                    else:
+                        flash("nizka hodnota")
+                        print("nedostatok tovaru")
+            return redirect("/uprav_mnozstvo")
         elif request.form['button'] == 'Prirataj':                        
             task_produkt_id = request.form.get('comp_select')
             task_mnozstvo = request.form['mnozstvo']
@@ -251,17 +254,6 @@ def uprav_mnozstvo_pobocka():
             najdeny_produkt = find_product(task_produkt_id)
             if najdeny_produkt is not None:
                prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id)
-            return redirect("/vytvor_pobocka2")
-        elif request.form['button'] == "Produkty":
-            print("som v nutry")
-            print(jsonify(request.form))
-            print("aaaaaaa", request.form)
-            a = request.form.to_dict()
-            print(len(a))
-            for x in range(1,int(((len(a)-1)/2)+1)):
-                bettina = a.get("product_"+str(int(x)))
-                dano = a.get("item_"+str(int(x)))
-                
             return redirect("/uprav_mnozstvo")
     else:
         dictionary = {}
