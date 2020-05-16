@@ -1,0 +1,1 @@
+$(sel).html($("#sablonka").html());

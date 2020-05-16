@@ -182,6 +182,20 @@ def najdi_polozku(email_id):
             return polozka
     return None
 
+
+def prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id):
+    produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
+    najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
+    ziskany_produkt = produkt.service.getById(najdeny_produkt.produkt_id)
+    hodnota=(int(najdeny_produkt.pocet_pobocka)+int(task_mnozstvo))
+    uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,0,najdeny_produkt.id,produkt_pobocka_wsdl)
+    if (hodnota>ziskany_produkt.min_pocet):
+        email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
+        polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
+        email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
+        produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
+
+
 @app.route('/uprav_mnozstvo',methods = ['POST','GET'])
 def uprav_mnozstvo_pobocka():
     if request.method=='POST':
@@ -231,24 +245,15 @@ def uprav_mnozstvo_pobocka():
             produkt_server = produkt.service.getById(task_produkt_id)
             najdeny_produkt = find_product(task_produkt_id)
             if najdeny_produkt is not None:
-                produkt_server = Produkt(produkt_server.id,produkt_server.name,produkt_server.min_pocet,produkt_server.dalsi_predaj)
-                najdeny_produkt = ProduktPobocka(int(najdeny_produkt.id),najdeny_produkt.name,int(najdeny_produkt.produkt_id),int(najdeny_produkt.pobocka_id),int(najdeny_produkt.pocet_pobocka),najdeny_produkt.pokles_minima)
-                ziskany_produkt = produkt.service.getById(najdeny_produkt.produkt_id)
-                hodnota=(int(najdeny_produkt.pocet_pobocka)+int(task_mnozstvo))
-                uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,0,najdeny_produkt.id,produkt_pobocka_wsdl)
-                if (hodnota>ziskany_produkt.min_pocet):
-                    email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
-                    polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
-                    email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
-                    produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
+               prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id)
             return redirect("/vytvor_pobocka2")
         elif request.form['button'] == "Produkty":
             print("som v nutry")
-            response_server = make_response(jsonify(request.form))
-            print(len(request.form))
+            print(jsonify(request.form))
+            print("aaaaaaa", request.form)
             for i in request.form:
                 if i!="button":
-                    print(request.form[i])
+                    print(i)
             return redirect("/uprav_mnozstvo")
     else:
         dictionary = {}
