@@ -256,9 +256,12 @@ def uprav_mnozstvo_pobocka():
             print("som v nutry")
             print(jsonify(request.form))
             print("aaaaaaa", request.form)
-            for i in request.form:
-                if i!="button":
-                    print(i)
+            a = request.form.to_dict()
+            print(len(a))
+            for x in range(1,int(((len(a)-1)/2)+1)):
+                bettina = a.get("product_"+str(int(x)))
+                dano = a.get("item_"+str(int(x)))
+                
             return redirect("/uprav_mnozstvo")
     else:
         dictionary = {}
