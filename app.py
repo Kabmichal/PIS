@@ -195,6 +195,27 @@ def prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id
         email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
         produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
 
+def pokles(najdeny_produkt,hodnota):
+    najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
+    print("najdeny zamestnanec je")
+    print(najdeny_zamestnanec)
+    if najdeny_zamestnanec is not None:
+        posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
+        uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
+        if condition == True:
+            scheduler.add_job(func=print_date_time, trigger="interval", seconds=150000)
+            scheduler.start()
+            condition = False  
+        atexit.register(lambda: scheduler.shutdown())
+        email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Tovar ",message="Od objednania tovaru presli 3 dni")
+
+def autoorder(najdeny_produkt,produkt_server):
+    flash("hodnota je na 0 automaticke objednanie")
+    uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,produkt_server.min_pocet*2,0,najdeny_produkt.id,produkt_pobocka_wsdl)
+    email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
+    polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
+    email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
+    produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
 
 @app.route('/uprav_mnozstvo',methods = ['POST','GET'])
 def uprav_mnozstvo_pobocka():
@@ -215,25 +236,9 @@ def uprav_mnozstvo_pobocka():
                     uprav_produkt_pobocka(najdeny_produkt.name,najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,najdeny_produkt.pokles_minima,najdeny_produkt.id,produkt_pobocka_wsdl)
                     print("pokles minima je ",najdeny_produkt.pokles_minima )
                     if (hodnota == 0):
-                        flash("hodnota je na 0 automaticke objednanie")
-                        uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,produkt_server.min_pocet*2,0,najdeny_produkt.id,produkt_pobocka_wsdl)
-                        email_to_remove=find_concrete_mail(najdeny_produkt.produkt_id)
-                        polozka_na_odstranenie = najdi_polozku(email_to_remove.id)
-                        email_wsdl.service.delete(team_id="021",team_password="RM7MZR",entity_id=email_to_remove.id)
-                        produkt_objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=polozka_na_odstranenie.id)
+                        autoorder(najdeny_produkt,produkt_server)
                     elif ((hodnota<produkt_server.min_pocet) and (najdeny_produkt.pokles_minima == 0)):
-                        najdeny_zamestnanec = find_zamestnanec(najdeny_produkt.pobocka_id)
-                        print("najdeny zamestnanec je")
-                        print(najdeny_zamestnanec)
-                        if najdeny_zamestnanec is not None:
-                            posli_email('vypredany tovar', najdeny_zamestnanec.id,najdeny_produkt.produkt_id,datetime.datetime.now(),0,email_wsdl)
-                            uprav_produkt_pobocka(najdeny_produkt.name, najdeny_produkt.produkt_id,najdeny_produkt.pobocka_id,hodnota,1,najdeny_produkt.id,produkt_pobocka_wsdl)
-                            if condition == True:
-                                scheduler.add_job(func=print_date_time, trigger="interval", seconds=150000)
-                                scheduler.start()
-                                condition = False  
-                            atexit.register(lambda: scheduler.shutdown())
-                            email_wsdl_notify.service.notify(team_id='021',password='RM7MZR',email="bettina.pinkeova@gmail.com",subject="Tovar ",message="Od objednania tovaru presli 3 dni")
+                        pokles(najdeny_produkt,hodnota)
                     return redirect("/vytvor_pobocka2")
                 else:
                     flash("nizka hodnota")
