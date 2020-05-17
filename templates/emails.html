@@ -78,8 +78,11 @@
       Aktualny pocet: {{email.aktualny_pocet}}
       <br>
       <!--<a href="/emails/etiketa_update/{{email.id}}">Odober etiketu</a>-->
-      <a href="/etiketa_update/{{email.email_id}}">Odober etiketu</a>
+      {% if email.dalsi_predaj == True %}
       <a href="/pridaj_do_objednavky/{{email.email_id}}">Pridaj do objednavky</a>
+      {% else %}
+      <a href="/etiketa_update/{{email.email_id}}">Odober etiketu</a>
+      {% endif %}
     </div>
   </div>
   <div id="overlay"></div>

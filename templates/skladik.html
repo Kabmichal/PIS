@@ -1,0 +1,23 @@
+<div class="form">
+    <form actions = '/skladik' method = "POST">
+        <th>
+        Názov:
+        <input type="text" name="name" id="name">
+        </th>
+        <th>
+        Produkt_id:
+        <select name="produkt_select" class="selectpicker form-control">
+            {% for produkt in list_of_products_in %}
+            <option value="{{ produkt.id }}">{{ produkt.name }}</option>
+            {% endfor %}
+        </select>
+        </th>
+        <th>
+            pocet
+            <input type="text" name="pocet" id="pocet">
+        </th>
+        <th>
+        <input type="submit" value="Pridaj" name="button" id="Pridaj">
+        </th>
+    </form>
+</div>

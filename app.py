@@ -11,6 +11,7 @@ from controllers.objednavka_controller import *
 from model.produktPobocka import *
 from model.produkt import *
 import json
+from controllers.produkt_sklad import *
 import requests
 from model.zamestnanec import *
 from flask_login import LoginManager, login_user, current_user,logout_user
@@ -45,6 +46,7 @@ hash_func = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/TextCipher?WSD
 calendar = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Calendar?WSDL")
 produkt_objednavka = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021produkt_objednavka?WSDL")
 lokacia = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/GeoServices/CitiesSK?WSDL")
+produkt_sklad = Client(wsdl="http://pis.predmety.fiit.stuba.sk/pis/ws/Students/Team021hlavny_sklad_produkt?WSDL")
 
 
 def print_date_time():
@@ -271,6 +273,16 @@ def uprav_mnozstvo_pobocka():
         return render_template('uprav_mnozstvo.html',list_of_products = list_of_products)
 
 
+@app.route('/skladik',methods = ['POST','GET'])
+def vytvor_produkt_sklad():
+    list_of_products_in = produkt.service.getAll()
+    if request.method=='POST':
+        print("pridaj produkt")
+        task_name = request.form['name']
+        task_produkt_id = request.form.get('produkt_select')
+        task_pobocka_id= request.form.get('pocet')
+        create_product_sklad(task_name, task_produkt_id,task_pobocka_id,produkt_sklad)
+    return render_template('skladik.html',list_of_products_in = list_of_products_in)
 
 @app.route('/pridaj_produkt',methods = ['POST','GET'])
 def vytvor_produkt2():
@@ -390,6 +402,15 @@ def zobraz_main_page():
     return render_template('after_login.html', mymap=mymap, sndmap=sndmap,name=name,adresa = adresa,lat=lat,lon=lon)
 
 
+def find_in_main_stock(produkt_id):
+    vsetky_polozky = produkt_sklad.service.getAll()
+    for polozka in vsetky_polozky:
+        if polozka.produkt_id == produkt_id:
+            return polozka
+    return None
+
+
+
 #https://codepen.io/Middi/pen/rJYOyz
 @app.route('/objednavka', methods = ['GET','POST'])
 def objednaj():
@@ -421,9 +442,14 @@ def objednaj():
     print("!!!!POD!!!!")
     print(list_of_orders)
     if request.method == 'POST':
+        print("list objednavok ",list_of_orders)
         for order in list_of_orders:
+            produkt_hl_sklad = find_in_main_stock(order['produkt_id'])
             print("order",order)
-            order['poznamka'] = "objednane od subdodavatela"
+            if produkt_hl_sklad is not None:
+                order['poznamka'] = "objednane od hlavného skladu"
+            else:
+                order['poznamka'] = "objednane od subdodavatela"
             odstran_vsetko(order)
         objednavka.service.delete(team_id="021",team_password="RM7MZR",entity_id=order['objednavka_id'])
         return render_template('objednavka_fixnuta.html',list_of_orders=list_of_orders)
