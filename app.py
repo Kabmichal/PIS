@@ -249,13 +249,17 @@ def uprav_mnozstvo_pobocka():
                         flash("nizka hodnota")
                         print("nedostatok tovaru")
             return redirect("/uprav_mnozstvo")
-        elif request.form['button'] == 'Prirataj':                        
-            task_produkt_id = request.form.get('comp_select')
-            task_mnozstvo = request.form['mnozstvo']
-            produkt_server = produkt.service.getById(task_produkt_id)
-            najdeny_produkt = find_product(task_produkt_id)
-            if najdeny_produkt is not None:
-               prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id)
+        elif request.form['button'] == 'Prirataj':
+            a = request.form.to_dict()
+            print(a)
+            for x in range(1,int(((len(a)-1)/2)+1)):
+                task_produkt_id = a.get("product_"+str(int(x)))
+                task_mnozstvo = a.get("item_"+str(int(x)))
+
+                produkt_server = produkt.service.getById(task_produkt_id)
+                najdeny_produkt = find_product(task_produkt_id)
+                if najdeny_produkt is not None:
+                    prirataj_button(najdeny_produkt,produkt_server,task_mnozstvo,task_produkt_id)
             return redirect("/uprav_mnozstvo")
     else:
         dictionary = {}

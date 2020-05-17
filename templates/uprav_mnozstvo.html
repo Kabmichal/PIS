@@ -39,12 +39,25 @@
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
                 crossorigin="anonymous"></script>
     </head>
+  
+</section>
+<link href="/static/css/tables.css" rel="stylesheet">
+<table class="container container-form">
+    <div class="nadpis">
+        <h1>Úprava množstva</h1>
+    </div>
+
     <body>
         Products:
         <form action="/uprav_mnozstvo" method="post">
+            <th>
+
             <div id="products"></div>
-            <button id="add_item" type="button">Add item</button>
+            <button id="add_item" type="button">Pridaj tovar</button>
             <input type="submit" value="Odrataj" name="button" id="Odrataj">
+            <input type="submit" value="Prirataj" name="button" id="Prirataj">
+        </th>
+
         </form>
         <script>
             $(document).ready(function(){
@@ -55,7 +68,7 @@
 
                 $("#add_item").on("click", function(){
                     count_item += 1;
-                    $("<input/>").attr({ type: "text", placeholder: "Enter product name",
+                    $("<input/>").attr({ type: "text", placeholder: "Zadaj mnozstvo",
                         name: "item_"+count_item}).appendTo("#products").wrap($("<div/>"));
                         var sel = $('<select>').attr({type:"dropdown",name: "product_"+count_item}).appendTo('#products').wrap($("<div/>"));;
 
@@ -66,35 +79,4 @@
             })
         </script>
     </body>
-</section>
-<link href="/static/css/tables.css" rel="stylesheet">
-<table class="container container-form">
-    <div class="nadpis">
-        <h1>Úprava množstva</h1>
-    </div>
-
-    <div class="content">
-        <div class="form">
-            <form actions = '/vytvor_pobocka2' method = "POST">
-                <th>
-                Produkt:
-                <select name="comp_select" class="selectpicker form-control">
-                    {% for produkt in list_of_products %}
-                    <option value="{{ produkt.id }}">{{ produkt.meno }}</option>
-                    {% endfor %}
-                </select>
-                </th>
-                <th>
-                Množstvo:
-                <input type="text" name="mnozstvo" id="mnozstvo">
-                </th>
-                <th>
-                <input type="submit" value="Odrataj" name="button" id="Odrataj">
-                </th>
-                <th>
-                <input type="submit" value="Prirataj" name="button" id="Prirataj">
-                </th>
-            </form>
-        </div>
-    </div>
 </table>
